@@ -28,7 +28,7 @@ resource "azurerm_application_insights_workbook" "cost_dashboard" {
   resource_group_name = var.resource_group_name
   location            = var.location
   display_name        = var.cost_dashboard_display_name
-  source_id           = azurerm_application_insights.main.id
+  source_id           = lower(azurerm_application_insights.main.id)
   category            = "workbook"
 
   data_json = templatefile("${path.module}/workbook-template.json", {
