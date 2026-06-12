@@ -16,3 +16,8 @@ output "subscription_keys" {
   }
   sensitive = true
 }
+
+output "developer_portal_url" {
+  description = "APIM Developer Portal URL"
+  value       = azurerm_api_management.main.developer_portal_url
+}

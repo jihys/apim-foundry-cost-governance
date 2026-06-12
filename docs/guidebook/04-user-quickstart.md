@@ -26,6 +26,14 @@ APIM_ENDPOINT=https://<apim-name>.azure-api.net
 APIM_SUBSCRIPTION_KEY=<your-subscription-key>
 ```
 
+> **Terraform으로 값 확인:**
+> ```bash
+> cd infra
+> terraform output apim_endpoint                # APIM_ENDPOINT 값
+> terraform output apim_developer_portal_url     # Developer Portal URL
+> terraform output -json apim_subscription_keys  # APIM_SUBSCRIPTION_KEY 값
+> ```
+
 > **주의:** `.env` 파일은 `.gitignore`에 포함되어 있어 Git에 커밋되지 않습니다. APIM Subscription Key를 코드에 하드코딩하지 마세요.
 
 ## 2. 퀵스타트 노트북 실행

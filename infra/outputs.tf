@@ -19,3 +19,8 @@ output "app_insights_connection_string" {
   value       = module.monitoring.app_insights_connection_string
   sensitive   = true
 }
+
+output "apim_developer_portal_url" {
+  description = "APIM Developer Portal URL for user self-service"
+  value       = module.apim.developer_portal_url
+}

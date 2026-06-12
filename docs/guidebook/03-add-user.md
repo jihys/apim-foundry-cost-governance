@@ -28,7 +28,9 @@
 
 APIM Developer Portal이 활성화된 경우, 사용자가 직접 가입할 수 있습니다:
 
-1. Developer Portal URL 접속: `https://<apim-name>.developer.azure-api.net`
+> **Developer Portal URL 확인:** `cd infra && terraform output apim_developer_portal_url`
+
+1. Developer Portal URL 접속
 2. **Sign up** 클릭
 3. 이메일, 이름, 비밀번호 입력 후 등록
 4. 이메일 인증 완료
@@ -75,7 +77,7 @@ terraform output -json apim_subscription_keys
 
 ### APIM Subscription Key 확인 (Developer Portal)
 
-1. Developer Portal 접속: `https://<apim-name>.developer.azure-api.net`
+1. Developer Portal 접속 (`terraform output apim_developer_portal_url`로 URL 확인)
 2. 로그인 후 **프로필** 메뉴 클릭
 3. 할당된 APIM Subscription의 키 확인 가능
 
