@@ -38,6 +38,10 @@ resource "azapi_resource" "project" {
   location  = var.location
   parent_id = azapi_resource.foundry_account.id
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   body = {
     properties = {}
   }
