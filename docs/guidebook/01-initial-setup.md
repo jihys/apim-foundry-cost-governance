@@ -19,6 +19,25 @@ az account set --subscription "<Azure Subscription ID>"
 
 <!-- screenshot: Azure CLI 로그인 성공 화면 -->
 
+### Azure Resource Provider 사전 등록
+
+아래 Resource Provider가 구독에 등록되어 있어야 합니다. 등록 권한이 있다면 다음 명령을 실행합니다:
+
+```bash
+az provider register --namespace Microsoft.ApiManagement
+az provider register --namespace Microsoft.CognitiveServices
+az provider register --namespace Microsoft.Insights
+az provider register --namespace Microsoft.OperationalInsights
+```
+
+등록 상태 확인:
+
+```bash
+az provider show -n Microsoft.ApiManagement --query registrationState -o tsv
+```
+
+> **참고:** 엔터프라이즈 구독에서는 Resource Provider 등록 권한이 제한될 수 있습니다. 이 경우 구독 관리자에게 사전 등록을 요청하세요.
+
 ## 1. 저장소 클론 및 설정
 
 ```bash
@@ -79,6 +98,8 @@ terraform init
 ```bash
 terraform plan
 ```
+
+> **트러블슈팅:** `Resource Provider registration` 관련 409 에러가 발생하면, 위 사전 요구사항의 Resource Provider 등록 단계를 확인하세요.
 
 생성될 리소스 목록을 확인합니다:
 
