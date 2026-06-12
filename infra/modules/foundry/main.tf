@@ -8,6 +8,10 @@ resource "azapi_resource" "foundry_account" {
   location  = var.location
   parent_id = var.resource_group_id
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   body = {
     kind = "AIServices"
     sku = {

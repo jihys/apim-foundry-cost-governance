@@ -17,7 +17,7 @@ model_deployments = [
   {
     name          = "gpt-4o"
     model_name    = "gpt-4o"
-    model_version = "2024-08-06"
+    model_version = "2024-11-20"
   },
   {
     name          = "gpt-5.4"
