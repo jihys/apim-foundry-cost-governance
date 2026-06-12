@@ -11,7 +11,7 @@ module "foundry" {
 
   resource_group_id      = azurerm_resource_group.main.id
   location               = var.location
-  foundry_hub_name       = var.foundry_hub_name
+  foundry_resource_name  = var.foundry_resource_name
   projects               = var.foundry_projects
   model_deployments      = var.model_deployments
   default_rate_limit_tpm = var.default_rate_limit_tpm

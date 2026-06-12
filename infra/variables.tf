@@ -37,7 +37,7 @@ variable "apim_publisher_email" {
   default     = "apim@example.com"
 }
 
-variable "foundry_hub_name" {
+variable "foundry_resource_name" {
   description = "Name of the shared Azure AI Services (Foundry) resource"
   type        = string
   default     = "aoai-foundry"

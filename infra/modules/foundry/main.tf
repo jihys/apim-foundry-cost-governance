@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------
 resource "azapi_resource" "foundry_account" {
   type      = "Microsoft.CognitiveServices/accounts@2025-06-01"
-  name      = var.foundry_hub_name
+  name      = var.foundry_resource_name
   location  = var.location
   parent_id = var.resource_group_id
 
@@ -14,7 +14,7 @@ resource "azapi_resource" "foundry_account" {
       name = "S0"
     }
     properties = {
-      customSubDomainName = var.foundry_hub_name
+      customSubDomainName = var.foundry_resource_name
       publicNetworkAccess = "Enabled"
     }
   }

@@ -8,7 +8,7 @@ variable "location" {
   type        = string
 }
 
-variable "foundry_hub_name" {
+variable "foundry_resource_name" {
   description = "Name of the shared Azure AI Services (Foundry) resource"
   type        = string
 }
