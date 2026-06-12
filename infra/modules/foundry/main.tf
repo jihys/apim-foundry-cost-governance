@@ -24,7 +24,9 @@ resource "azapi_resource" "foundry_account" {
     }
   }
 
-  response_export_values = ["properties.endpoint"]
+  response_export_values = {
+    endpoint = "properties.endpoint"
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -46,7 +48,9 @@ resource "azapi_resource" "project" {
     properties = {}
   }
 
-  response_export_values = ["properties.endpoint"]
+  response_export_values = {
+    endpoint = "properties.endpoint"
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -57,7 +61,9 @@ data "azapi_resource_action" "foundry_keys" {
   resource_id = azapi_resource.foundry_account.id
   action      = "listKeys"
 
-  response_export_values = ["key1"]
+  response_export_values = {
+    key1 = "key1"
+  }
 }
 
 # ---------------------------------------------------------------------------

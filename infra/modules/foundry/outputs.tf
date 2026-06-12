@@ -2,7 +2,7 @@ output "project_endpoints" {
   description = "Map of Foundry Project name to project endpoint URL"
   value = {
     for name, project in azapi_resource.project :
-    name => project.output.properties.endpoint
+    name => project.output.endpoint
   }
 }
 
