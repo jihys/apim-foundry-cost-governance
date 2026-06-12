@@ -1,8 +1,8 @@
 output "project_endpoints" {
-  description = "Map of Foundry Project name to project endpoint URL"
+  description = "Map of Foundry Project name to endpoint URL (all use parent account endpoint)"
   value = {
-    for name, project in azapi_resource.project :
-    name => project.output.endpoint
+    for name in var.projects :
+    name => azapi_resource.foundry_account.output.endpoint
   }
 }
 

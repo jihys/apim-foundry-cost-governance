@@ -47,10 +47,6 @@ resource "azapi_resource" "project" {
   body = {
     properties = {}
   }
-
-  response_export_values = {
-    endpoint = "properties.endpoint"
-  }
 }
 
 # ---------------------------------------------------------------------------
