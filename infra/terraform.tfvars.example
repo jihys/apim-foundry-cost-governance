@@ -10,7 +10,7 @@ apim_publisher_name  = "AI Platform Team"
 apim_publisher_email = "apim@example.com"
 
 # Foundry Projects (팀별 — child resources under the shared Foundry account)
-foundry_projects = ["catalog", "image"]
+foundry_projects = ["catalog-project", "image-project"]
 
 # Shared model deployments at the Foundry resource level
 model_deployments = [
