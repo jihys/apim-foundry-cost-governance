@@ -14,8 +14,9 @@ resource "azapi_resource" "foundry_account" {
       name = "S0"
     }
     properties = {
-      customSubDomainName = var.foundry_resource_name
-      publicNetworkAccess = "Enabled"
+      customSubDomainName    = var.foundry_resource_name
+      publicNetworkAccess    = "Enabled"
+      allowProjectManagement = true
     }
   }
 
@@ -53,6 +54,10 @@ data "azapi_resource_action" "foundry_keys" {
 
 # ---------------------------------------------------------------------------
 # Model deployments (shared at the Foundry resource level)
+#
+# NOTE: ARM serialises writes to the parent resource, so parallel deployments
+# may fail with HTTP 409 Conflict.  If this happens, re-run with:
+#   terraform apply -parallelism=1
 # ---------------------------------------------------------------------------
 resource "azapi_resource" "model_deployment" {
   for_each = { for d in var.model_deployments : d.name => d }
