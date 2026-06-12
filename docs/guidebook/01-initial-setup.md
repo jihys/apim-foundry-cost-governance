@@ -104,8 +104,9 @@ terraform plan
 생성될 리소스 목록을 확인합니다:
 
 - `azurerm_resource_group` — 리소스 그룹
-- `azapi_resource.foundry_account` — Foundry Project별 Azure AI Services 계정
-- `azapi_resource.model_deployment` — 프로젝트별 모델 배포
+- `azapi_resource.foundry_account` — Foundry 리소스 (AIServices)
+- `azapi_resource.project` — 팀별 Foundry Project
+- `azapi_resource.model_deployment` — 공유 모델 배포
 
 <!-- screenshot: terraform plan 출력 (리소스 목록) -->
 
