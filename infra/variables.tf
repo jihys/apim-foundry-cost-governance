@@ -38,16 +38,23 @@ variable "apim_publisher_email" {
 }
 
 variable "foundry_hub_name" {
-  description = "Name prefix for Foundry Project Azure AI Services accounts"
+  description = "Name of the shared Azure AI Services (Foundry) resource"
   type        = string
   default     = "aoai-foundry"
 }
 
 variable "foundry_projects" {
-  description = "List of Foundry Project configurations. Each project maps 1:1 to a team."
+  description = "List of Foundry Project names (one per team). Each becomes a child resource under the shared Foundry account."
+  type        = list(string)
+}
+
+variable "model_deployments" {
+  description = "Shared model deployments at the Foundry resource level"
   type = list(object({
     name           = string
-    models         = list(string)
+    model_name     = string
+    model_version  = string
+    sku_name       = optional(string, "GlobalStandard")
     rate_limit_tpm = optional(number)
   }))
 }

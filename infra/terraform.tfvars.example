@@ -9,17 +9,25 @@ apim_sku             = "Developer_1" # Production: StandardV2_1
 apim_publisher_name  = "AI Platform Team"
 apim_publisher_email = "apim@example.com"
 
-# Foundry Projects (팀별)
-foundry_projects = [
+# Foundry Projects (팀별 — child resources under the shared Foundry account)
+foundry_projects = ["catalog", "image"]
+
+# Shared model deployments at the Foundry resource level
+model_deployments = [
   {
-    name           = "catalog"
-    models         = ["gpt-4o"]
-    rate_limit_tpm = null # null = 기본값 10000
+    name          = "gpt-4o"
+    model_name    = "gpt-4o"
+    model_version = "2024-08-06"
   },
   {
-    name           = "image"
-    models         = ["gpt-4o", "dall-e-3"]
-    rate_limit_tpm = null
+    name          = "gpt-5.4"
+    model_name    = "gpt-5.4"
+    model_version = "2025-04-14"
+  },
+  {
+    name          = "gpt-5.2"
+    model_name    = "gpt-5.2"
+    model_version = "2025-03-20"
   }
 ]
 

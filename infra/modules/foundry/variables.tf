@@ -4,26 +4,33 @@ variable "resource_group_id" {
 }
 
 variable "location" {
-  description = "Azure region for Foundry Project resources"
+  description = "Azure region for Foundry resources"
   type        = string
 }
 
 variable "foundry_hub_name" {
-  description = "Name prefix for Azure AI Services accounts (each Foundry Project gets {prefix}-{project_name})"
+  description = "Name of the shared Azure AI Services (Foundry) resource"
   type        = string
 }
 
 variable "projects" {
-  description = "List of Foundry Project configurations. Each entry creates an Azure AI Services account and deploys the specified models."
+  description = "List of Foundry Project names (one per team). Each becomes a child resource under the shared Foundry account."
+  type        = list(string)
+}
+
+variable "model_deployments" {
+  description = "Shared model deployments at the Foundry resource level"
   type = list(object({
     name           = string
-    models         = list(string)
+    model_name     = string
+    model_version  = string
+    sku_name       = optional(string, "GlobalStandard")
     rate_limit_tpm = optional(number)
   }))
 }
 
 variable "default_rate_limit_tpm" {
-  description = "Default rate limit in tokens per minute, used when a project does not specify rate_limit_tpm"
+  description = "Default rate limit in tokens per minute, used when a deployment does not specify rate_limit_tpm"
   type        = number
   default     = 10000
 }
