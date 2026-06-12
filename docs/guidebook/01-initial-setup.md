@@ -112,6 +112,11 @@ terraform plan
 
 ### 배포 실행
 
+> **팁:** 배포 전에 대상 리전에서 모델 가용성을 확인하세요:
+> ```bash
+> az cognitiveservices model list --location koreacentral -o table
+> ```
+
 ```bash
 terraform apply
 ```
