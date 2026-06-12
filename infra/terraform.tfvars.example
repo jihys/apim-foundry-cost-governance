@@ -4,7 +4,7 @@ resource_group_name = "rg-apim-foundry"
 location            = "koreacentral"
 
 # APIM
-apim_name            = "apim-foundry-gw"
+apim_name            = "apim-foundry-gw-jihys"
 apim_sku             = "Developer_1" # Production: StandardV2_1
 apim_publisher_name  = "AI Platform Team"
 apim_publisher_email = "apim@example.com"
