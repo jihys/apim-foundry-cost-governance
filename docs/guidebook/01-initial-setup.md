@@ -125,6 +125,17 @@ terraform apply
 
 <!-- screenshot: terraform apply 완료 화면 -->
 
+### Developer Portal 초기 설정 (최초 1회)
+
+Terraform 배포 후 Developer Portal을 활성화하려면:
+
+1. Azure Portal → API Management (`apim-foundry-gw-jihys`) → 왼쪽 메뉴 **Developer portal**
+2. 상단 툴바의 **"Developer portal"** 링크 클릭 → 관리 인터페이스가 새 탭에서 열림
+3. 관리 인터페이스 로드 완료 후, Azure Portal 탭으로 돌아가서 페이지 새로고침
+4. **"Publish"** 버튼 클릭
+
+> 이 과정은 최초 배포 시 1회만 필요합니다. 이후 API/Product 변경은 Terraform이 자동 반영합니다.
+
 ## 4. 배포 확인
 
 ### Terraform 출력 확인

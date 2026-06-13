@@ -8,6 +8,18 @@ resource "azurerm_api_management" "main" {
   publisher_name      = var.publisher_name
   publisher_email     = var.publisher_email
   sku_name            = var.sku
+
+  sign_up {
+    enabled = true
+    terms_of_service {
+      enabled          = false
+      consent_required = false
+    }
+  }
+
+  sign_in {
+    enabled = true
+  }
 }
 
 # ---------------------------------------------------------------------------
