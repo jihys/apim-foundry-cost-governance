@@ -217,10 +217,10 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"https://prices.azure.com/api/retail/prices\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2023-01-01-preview\"},{\"key\":\"$filter\",\"value\":\"serviceName eq 'Azure OpenAI' and armRegionName eq '${location}'\"}],\"batchSize\":20,\"workspaceFilters\":{},\"resultFormat\":\"table\"}",
+              "query": "let pricing = externaldata(currencyCode:string, tierMinimumUnits:real, retailPrice:real, unitPrice:real, armRegionName:string, location:string, effectiveStartDate:string, meterId:string, meterName:string, productId:string, skuId:string, productName:string, skuName:string, serviceName:string, serviceId:string, serviceFamily:string, unitOfMeasure:string, type:string, isPrimaryMeterRegion:bool, armSkuName:string) [h@'https://prices.azure.com/api/retail/prices?api-version=2023-01-01-preview&$filter=serviceName%20eq%20%27Foundry%20Models%27%20and%20armRegionName%20eq%20%27${location}%27'] with (format='multijson', ingestionMapping='[{\"column\":\"currencyCode\",\"path\":\"$.Items[*].currencyCode\"},{\"column\":\"retailPrice\",\"path\":\"$.Items[*].retailPrice\"},{\"column\":\"meterName\",\"path\":\"$.Items[*].meterName\"},{\"column\":\"productName\",\"path\":\"$.Items[*].productName\"},{\"column\":\"skuName\",\"path\":\"$.Items[*].skuName\"},{\"column\":\"unitOfMeasure\",\"path\":\"$.Items[*].unitOfMeasure\"},{\"column\":\"armRegionName\",\"path\":\"$.Items[*].armRegionName\"},{\"column\":\"serviceName\",\"path\":\"$.Items[*].serviceName\"}]');\npricing\n| where retailPrice > 0\n| project meterName, retailPrice, currencyCode, unitOfMeasure, productName, skuName\n| order by productName asc, meterName asc",
               "size": 1,
-              "title": "Azure OpenAI 모델별 단가 (Azure Retail Prices)",
-              "queryType": 12,
+              "title": "AI Foundry 모델별 단가 (Azure Retail Prices)",
+              "queryType": 0,
               "resourceType": "microsoft.insights/components",
               "visualization": "table",
               "showExportToExcel": true
