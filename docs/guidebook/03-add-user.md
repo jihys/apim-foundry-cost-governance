@@ -62,18 +62,50 @@ cd infra && terraform output apim_developer_portal_url
 
 ## 3. 사용자에게 안내
 
-사용자에게 다음 절차를 안내합니다:
+관리자가 User Group 할당을 완료한 후, 사용자에게 아래 절차를 안내합니다.
 
-1. Developer Portal 로그인
-2. **Products** 메뉴에서 자신의 프로젝트 Product 선택
-3. **"Subscribe"** 클릭 → Personal Key 즉시 발급
-4. **Profile** 페이지에서 Personal Key 확인
+### 3-1. Developer Portal 로그인
 
-<!-- screenshot: Developer Portal Products 구독 화면 -->
+> **Developer Portal URL:** `https://<your-apim-name>.developer.azure-api.net`
+>
+> 시크릿/InPrivate 브라우저 창에서 접속하세요 (Azure Portal에 로그인된 일반 브라우저에서는 관리자 편집 화면으로 이동됩니다).
+
+![Developer Portal Sign in](images/03-signin.png)
+
+1. Developer Portal URL 접속
+2. **Sign in** 클릭
+3. 가입 시 등록한 이메일과 비밀번호 입력
+4. **Sign in** 버튼 클릭
+
+### 3-2. Product 구독 (Personal Key 발급)
+
+![Product Subscribe](images/03-subscribe.png)
+
+1. 상단 메뉴에서 **Products** 클릭
+2. 관리자가 할당한 프로젝트 선택 (예: `catalog-project`)
+3. Subscription Name 입력 (예: `catalog-subscription-key`)
+4. **Subscribe** 버튼 클릭 → Personal Key 즉시 발급
 
 > 사용자당 Product별 1개의 Personal Key만 발급 가능합니다 (`subscriptions_limit = 1`).
 
-사용자가 Personal Key를 확인한 후 [사용자 퀵스타트 가이드](04-user-quickstart.md)를 전달하여 API 호출을 시작하도록 안내합니다.
+### 3-3. Personal Key 확인
+
+![User Profile](images/03-profile.png)
+
+1. 상단 오른쪽의 사용자 이름 클릭 → **Profile** 선택
+2. **Subscriptions** 섹션에서 구독 정보 확인
+3. **Primary key** 옆의 **Show** 클릭 → 키가 표시됨
+4. 키를 복사하여 API 호출에 사용
+
+| 항목 | 설명 |
+|------|------|
+| Name | 구독 이름 (구독 시 입력한 값) |
+| Product | 할당된 프로젝트 |
+| State | `Active` — 즉시 사용 가능 |
+| Primary key | API 호출 시 `Ocp-Apim-Subscription-Key` 헤더에 사용 |
+| Secondary key | Primary key 로테이션 시 사용 |
+
+Personal Key를 확인한 후 [사용자 퀵스타트 가이드](04-user-quickstart.md)를 참고하여 API 호출을 시작합니다.
 
 ## 4. Service Key (CI/CD용)
 

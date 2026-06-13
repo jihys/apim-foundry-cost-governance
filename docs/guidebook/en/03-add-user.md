@@ -62,18 +62,50 @@ Assign the registered user to the User Group for their Foundry Project:
 
 ## 3. Instruct the User
 
-Guide the user through the following steps:
+After the administrator completes the User Group assignment, share the following steps with the user.
 
-1. Log in to the Developer Portal
-2. Go to the **Products** menu and select their project's Product
-3. Click **"Subscribe"** → a Personal Key is issued immediately
-4. Check the Personal Key on the **Profile** page
+### 3-1. Sign In to the Developer Portal
 
-<!-- screenshot: Developer Portal Products subscription screen -->
+> **Developer Portal URL:** `https://<your-apim-name>.developer.azure-api.net`
+>
+> Use a private/incognito browser window. In a regular browser signed into Azure Portal, you will be redirected to the admin editing interface.
+
+![Developer Portal Sign in](../images/03-signin.png)
+
+1. Navigate to the Developer Portal URL
+2. Click **Sign in**
+3. Enter the email and password used during registration
+4. Click the **Sign in** button
+
+### 3-2. Subscribe to a Product (Issue Personal Key)
+
+![Product Subscribe](../images/03-subscribe.png)
+
+1. Click **Products** in the top menu
+2. Select the project assigned by the administrator (e.g., `catalog-project`)
+3. Enter a Subscription Name (e.g., `catalog-subscription-key`)
+4. Click the **Subscribe** button → a Personal Key is issued immediately
 
 > Each user can issue only one Personal Key per Product (`subscriptions_limit = 1`).
 
-Once the user has their Personal Key, share the [User Quickstart Guide](04-user-quickstart.md) so they can start making API calls.
+### 3-3. View Your Personal Key
+
+![User Profile](../images/03-profile.png)
+
+1. Click your username in the top-right corner → select **Profile**
+2. Find your subscription in the **Subscriptions** section
+3. Click **Show** next to the **Primary key** → the key is displayed
+4. Copy the key to use in API calls
+
+| Field | Description |
+|-------|-------------|
+| Name | Subscription name (entered during subscribe) |
+| Product | Assigned project |
+| State | `Active` — ready to use |
+| Primary key | Used in the `Ocp-Apim-Subscription-Key` header for API calls |
+| Secondary key | Used for key rotation when regenerating the Primary key |
+
+Once the user has their Personal Key, refer to the [User Quickstart Guide](04-user-quickstart.md) to start making API calls.
 
 ## 4. Service Key (for CI/CD)
 
