@@ -17,6 +17,9 @@ Azure CLI 로그인이 필요합니다:
 ```bash
 az login
 az account set --subscription "<Azure Subscription ID>"
+
+# 현재 활성 구독 확인
+az account show --query "{name:name, id:id}" -o table
 ```
 
 <!-- screenshot: Azure CLI 로그인 성공 화면 -->
@@ -37,6 +40,8 @@ az provider register --namespace Microsoft.OperationalInsights
 ```bash
 az provider show -n Microsoft.ApiManagement --query registrationState -o tsv
 ```
+
+> **참고:** Resource Provider 등록은 15~30분 소요될 수 있습니다. 모든 Provider가 `Registered` 상태가 될 때까지 확인한 후 `terraform apply`를 진행하세요.
 
 > **참고:** 엔터프라이즈 구독에서는 Resource Provider 등록 권한이 제한될 수 있습니다. 이 경우 구독 관리자에게 사전 등록을 요청하세요.
 
@@ -59,19 +64,18 @@ cp terraform.tfvars.example terraform.tfvars
 `terraform.tfvars`를 편집하여 환경에 맞는 값을 설정합니다:
 
 ```hcl
-# Azure Subscription ID (Azure Portal > Subscriptions에서 확인)
 subscription_id     = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 resource_group_name = "rg-apim-foundry"
 location            = "koreacentral"
 
-# APIM Instance 설정
-apim_name = "apim-foundry-gw"
-apim_sku  = "Developer_1"  # 프로덕션 환경에서는 StandardV2_1 권장
+apim_name            = "apim-foundry-gw-mycompany"
+apim_sku             = "Developer_1"
+apim_publisher_name  = "AI Platform Team"
+apim_publisher_email = "admin@example.com"
 
-# Foundry Projects — 팀별로 하나씩 정의 (단순 문자열 리스트)
-foundry_projects = ["catalog-project", "image-project"]
+foundry_resource_name = "aoai-foundry-mycompany"
+foundry_projects      = ["team-a-project", "team-b-project"]
 
-# 공유 모델 배포
 model_deployments = [
   {
     name          = "gpt-4o"
@@ -80,6 +84,8 @@ model_deployments = [
   }
 ]
 ```
+
+> ⚠️ `apim_name`은 Azure 전역에서 고유해야 합니다. `apim-{company}-{env}` 형식을 권장합니다.
 
 > **참고:** `apim_sku`는 초기 개발 시 `Developer_1`을 사용하고, 프로덕션 배포 시 `StandardV2_1`로 변경합니다. Developer SKU는 SLA가 제공되지 않습니다.
 
@@ -114,7 +120,10 @@ terraform plan
 
 > **팁:** 배포 전에 대상 리전에서 모델 가용성을 확인하세요:
 > ```bash
-> az cognitiveservices model list --location koreacentral -o table
+> # 리전에서 사용 가능한 모델 버전 확인
+> az cognitiveservices model list --location koreacentral \
+>   --query "[?model.name=='gpt-4o'].{name:model.name, version:model.version, status:model.lifecycleStatus}" \
+>   -o table
 > ```
 
 ```bash
@@ -135,6 +144,12 @@ Terraform 배포 후 Developer Portal을 활성화하려면:
 4. **"Publish"** 버튼 클릭
 
 > 이 과정은 최초 배포 시 1회만 필요합니다. 이후 API/Product 변경은 Terraform이 자동 반영합니다.
+
+5. (선택) 웰컴 메시지 및 포탈 설정:
+   ```bash
+   ./scripts/setup-portal.sh <apim-name> <resource-group> <subscription-id>
+   ```
+   이 스크립트는 신규 사용자를 위한 가이드 메시지를 설정하고 포탈을 재publish합니다.
 
 ## 4. 배포 확인
 
@@ -164,6 +179,15 @@ terraform output foundry_project_endpoints
 ## 5. Service Key 확인 (CI/CD용)
 
 Terraform은 각 Foundry Project에 대해 **Service Key**를 자동 생성합니다. Service Key는 CI/CD 파이프라인, 자동화 스크립트 등 시스템 용도로만 사용하며, 사람이 직접 사용하지 않습니다.
+
+### Service Key vs Personal Key
+
+| 구분 | Service Key | Personal Key |
+|------|-------------|-------------|
+| 발급 방식 | Terraform 자동 생성 | Developer Portal 셀프서비스 |
+| 용도 | CI/CD, 자동화 스크립트 | 개인 사용자 API 호출 |
+| 공유 | 시스템 간 공유 | 개인 전용 (공유 불가) |
+| 사용량 추적 | 프로젝트 단위 | 사용자 단위 |
 
 ```bash
 terraform output -json apim_subscription_keys

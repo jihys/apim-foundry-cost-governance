@@ -4,6 +4,15 @@
 
 This guide explains how to add a new user to an existing Foundry Project. The workflow is: the user registers on the Developer Portal, an administrator assigns them to a User Group, and then the user self-issues a Personal Key.
 
+## Key Type Guide
+
+| Scenario | Key to Use | How to Obtain |
+|----------|-----------|---------------|
+| Developer testing APIs locally | Personal Key | Developer Portal subscription |
+| Jupyter Notebook exercises | Personal Key | Developer Portal subscription |
+| CI/CD pipelines | Service Key | `terraform output` |
+| Batch processing scripts | Service Key | `terraform output` |
+
 ## Prerequisites
 
 - APIM Instance + Developer Portal deployed (see [Initial Setup Guide](01-initial-setup.md))

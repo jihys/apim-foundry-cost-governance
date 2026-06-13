@@ -8,7 +8,17 @@ This guide explains how to start making API calls after obtaining your Personal 
 
 - You have subscribed to a Product on the Developer Portal and received your Personal Key (see [Add User Guide](03-add-user.md))
 - Python 3.10+ installed
-- `openai` Python package installed: `pip install openai`
+
+### Python Environment Setup
+
+```bash
+# Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install required packages
+pip install openai python-dotenv
+```
 
 ## 1. Configure Runtime Config (.env)
 
@@ -33,7 +43,9 @@ APIM_SUBSCRIPTION_KEY=<your-personal-key>
 > 2. Log in → **Profile** menu
 > 3. Find the Subscription Key for the Product you subscribed to
 
-> **Important:** The `.env` file is included in `.gitignore` and will not be committed to Git. Do not hard-code your APIM Subscription Key in source code.
+> **Important:** The `.env` file is included in `.gitignore` and will not be committed to Git.
+> Do not hard-code your Personal Key in source code or commit it to Git.
+> If your key is compromised, regenerate it immediately on the Developer Portal.
 
 ## 2. Run the Quickstart Notebook
 
@@ -96,12 +108,16 @@ If you encounter errors:
 | `403 Forbidden` | Not assigned to a User Group, or not subscribed to the Product | Ask your administrator for User Group assignment, then subscribe to the Product on the Developer Portal |
 | `404 Not Found` | Incorrect endpoint or model name | Verify `APIM_ENDPOINT` and the `model` parameter |
 | `429 Too Many Requests` | Rate limit exceeded | Wait and retry, or ask your administrator to adjust the limit |
+| `Connection refused` | APIM deployment not complete | Verify the URL with `terraform output apim_endpoint` |
+| `InvalidApiKey` | Key format error | Re-copy the key from Developer Portal Profile |
 
-## 5. Per-User Token Usage Tracking
+## 5. Per-User Usage Tracking
 
-When you use a Personal Key, per-user Token Usage is tracked automatically. The APIM Policy records each request's `subscriber` information (user email) in App Insights Telemetry, so your usage appears in the Cost Dashboard without any custom headers.
+When you use a Personal Key, **per-user usage tracking is automatic**.
+Each Personal Key is linked to subscriber information and recorded as the `subscriber` dimension in App Insights.
+No custom headers or additional configuration are required.
 
-> **Note:** The `x-user-id` custom header is no longer required. With the switch to the Personal Key model, user identification is handled automatically at the Subscription level.
+Administrators can view per-user and per-project token usage on the **Cost Dashboard** in the Azure Portal.
 
 ## Next Steps
 

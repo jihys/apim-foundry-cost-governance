@@ -8,7 +8,17 @@ Personal Key를 발급받은 후, API 호출을 시작하는 방법을 안내합
 
 - Developer Portal에서 Product에 구독하여 Personal Key를 발급받은 상태 ([사용자 추가 가이드](03-add-user.md) 참고)
 - Python 3.10+ 설치
-- `openai` Python 패키지 설치: `pip install openai`
+
+### Python 환경 설정
+
+```bash
+# 가상환경 생성 및 활성화
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# 필수 패키지 설치
+pip install openai python-dotenv
+```
 
 ## 1. Runtime Config (.env) 설정
 
@@ -33,7 +43,9 @@ APIM_SUBSCRIPTION_KEY=<your-personal-key>
 > 2. 로그인 → **Profile** 메뉴
 > 3. 구독한 Product의 Subscription Key 확인
 
-> **주의:** `.env` 파일은 `.gitignore`에 포함되어 있어 Git에 커밋되지 않습니다. APIM Subscription Key를 코드에 하드코딩하지 마세요.
+> ⚠️ `.env` 파일은 `.gitignore`에 포함되어 있어 Git에 커밋되지 않습니다. 
+> Personal Key를 코드에 하드코딩하거나 Git에 커밋하지 마세요.
+> 키가 유출된 경우 Developer Portal에서 즉시 재발급하세요.
 
 ## 2. 퀵스타트 노트북 실행
 
@@ -96,12 +108,16 @@ print(response.choices[0].message.content)
 | `403 Forbidden` | User Group에 할당되지 않았거나 Product에 구독하지 않음 | 관리자에게 User Group 할당 요청 후, Developer Portal에서 Product 구독 |
 | `404 Not Found` | 잘못된 엔드포인트 또는 모델명 | `APIM_ENDPOINT`와 `model` 파라미터 확인 |
 | `429 Too Many Requests` | Rate limit 초과 | 잠시 후 재시도하거나 관리자에게 한도 조정 요청 |
+| `Connection refused` | APIM 배포 미완료 | `terraform output apim_endpoint`로 URL 확인 |
+| `InvalidApiKey` | 키 형식 오류 | Developer Portal Profile에서 키를 다시 복사 |
 
-## 5. 사용자별 Token Usage 추적
+## 5. 사용자별 사용량 추적
 
-Personal Key를 사용하면 사용자별 Token Usage가 자동으로 추적됩니다. APIM Policy가 각 요청의 `subscriber` 정보(사용자 이메일)를 App Insights Telemetry에 기록하므로, 별도의 커스텀 헤더 없이 Cost Dashboard에서 사용자별 사용량을 확인할 수 있습니다.
+Personal Key를 사용하면 **사용자별 사용량 추적이 자동으로** 됩니다.
+각 Personal Key는 구독자 정보와 연결되어 App Insights에 `subscriber` 차원으로 기록됩니다.
+별도의 커스텀 헤더나 추가 설정이 필요하지 않습니다.
 
-> **참고:** 기존 `x-user-id` 커스텀 헤더는 더 이상 필요하지 않습니다. Personal Key 방식으로 전환하면서 사용자 식별이 Subscription 단위로 자동 처리됩니다.
+관리자는 Azure Portal의 **Cost Dashboard**에서 사용자별/프로젝트별 토큰 사용량을 확인할 수 있습니다.
 
 ## 다음 단계
 

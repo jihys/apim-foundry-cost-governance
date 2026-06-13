@@ -4,6 +4,15 @@
 
 기존 Foundry Project에 새 사용자를 추가하는 방법을 안내합니다. 사용자는 Developer Portal에서 등록하고, 관리자가 User Group에 할당한 뒤, 사용자가 직접 Personal Key를 발급받는 흐름입니다.
 
+## 키 유형 안내
+
+| 시나리오 | 사용할 키 | 발급 방법 |
+|---------|----------|----------|
+| 개발자가 로컬에서 API 테스트 | Personal Key | Developer Portal 구독 |
+| Jupyter Notebook 실습 | Personal Key | Developer Portal 구독 |
+| CI/CD 파이프라인 | Service Key | `terraform output` |
+| 배치 처리 스크립트 | Service Key | `terraform output` |
+
 ## 사전 요구사항
 
 - APIM Instance + Developer Portal 배포 완료 ([초기 설정 가이드](01-initial-setup.md) 참고)
