@@ -52,11 +52,15 @@ If the user cannot sign up on their own, an administrator can register them:
 
 Assign the registered user to the User Group for their Foundry Project:
 
-1. Azure Portal → APIM Instance → **Groups**
-2. Select the project group (e.g., `catalog-project-users`)
-3. Click **+ Add member** → search for the user → add
+![APIM Groups](../images/03-groups.png)
 
-<!-- screenshot: APIM User Group member addition screen -->
+1. Azure Portal → APIM Instance → left menu **Groups**
+2. Select the project group (e.g., `catalog-project Users`)
+
+![Group Add Member](../images/03-group-member.png)
+
+3. Click **+ Add member** → search for the user → add
+4. The user appears in the Members list when complete
 
 > **This assignment is the approval action.** There is no separate approval process — only users assigned to a group can subscribe to the corresponding Product.
 

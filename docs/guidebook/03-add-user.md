@@ -52,11 +52,15 @@ cd infra && terraform output apim_developer_portal_url
 
 등록된 사용자를 해당 Foundry Project의 User Group에 할당합니다:
 
-1. Azure Portal → APIM Instance → **그룹**
-2. 해당 프로젝트 그룹 선택 (예: `catalog-project-users`)
-3. **+ 구성원 추가** → 사용자 검색 → 추가
+![APIM Groups](images/03-groups.png)
 
-<!-- screenshot: APIM User Group 구성원 추가 화면 -->
+1. Azure Portal → APIM Instance → 왼쪽 메뉴 **그룹 (Groups)**
+2. 해당 프로젝트 그룹 선택 (예: `catalog-project Users`)
+
+![Group Add Member](images/03-group-member.png)
+
+3. **+ Add member (구성원 추가)** 클릭 → 사용자 검색 → 추가
+4. Members 목록에 사용자가 표시되면 완료
 
 > **이 할당이 곧 승인 행위입니다.** 별도의 승인 절차 없이, 그룹에 할당된 사용자만 해당 Product에 구독할 수 있습니다.
 
