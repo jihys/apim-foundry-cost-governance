@@ -106,7 +106,7 @@ After the administrator completes the User Group assignment, share the following
 | Name | Subscription name (entered during subscribe) |
 | Product | Assigned project |
 | State | `Active` — ready to use |
-| Primary key | Used in the `Ocp-Apim-Subscription-Key` header for API calls |
+| Primary key | Used in the `api-key` header for API calls |
 | Secondary key | Used for key rotation when regenerating the Primary key |
 
 Once the user has their Personal Key, refer to the [User Quickstart Guide](04-user-quickstart.md) to start making API calls.

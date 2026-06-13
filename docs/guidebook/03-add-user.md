@@ -106,7 +106,7 @@ cd infra && terraform output apim_developer_portal_url
 | Name | 구독 이름 (구독 시 입력한 값) |
 | Product | 할당된 프로젝트 |
 | State | `Active` — 즉시 사용 가능 |
-| Primary key | API 호출 시 `Ocp-Apim-Subscription-Key` 헤더에 사용 |
+| Primary key | API 호출 시 `api-key` 헤더에 사용 |
 | Secondary key | Primary key 로테이션 시 사용 |
 
 Personal Key를 확인한 후 [사용자 퀵스타트 가이드](04-user-quickstart.md)를 참고하여 API 호출을 시작합니다.
