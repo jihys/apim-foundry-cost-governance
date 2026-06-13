@@ -160,6 +160,7 @@ resource "azurerm_api_management_product" "project" {
   resource_group_name   = var.resource_group_name
   display_name          = each.key
   subscription_required = true
+  subscriptions_limit   = 1
   approval_required     = false
   published             = true
 }
@@ -181,7 +182,7 @@ resource "azurerm_api_management_subscription" "project" {
   api_management_name = azurerm_api_management.main.name
   resource_group_name = var.resource_group_name
   product_id          = azurerm_api_management_product.project[each.key].id
-  display_name        = "${each.key}-team-key"
+  display_name        = "${each.key}-service-key"
   state               = "active"
 }
 
@@ -239,6 +240,7 @@ resource "azurerm_api_management_product_policy" "project" {
             <set-variable name="modelName" value="@{var body = (JObject)context.Variables[&quot;responseBody&quot;]; return body[&quot;model&quot;]?.ToString() ?? &quot;unknown&quot;;}" />
             <emit-metric name="TokenUsage" value="1" namespace="apim-foundry">
               <dimension name="subscription-id" value="@(context.Subscription.Id)" />
+              <dimension name="subscriber" value="@(context.User.Email ?? context.User.Id)" />
               <dimension name="project-name" value="@(context.Product.Name)" />
               <dimension name="model" value="@((string)context.Variables[&quot;modelName&quot;])" />
               <dimension name="prompt-tokens" value="@((string)context.Variables[&quot;promptTokens&quot;])" />
