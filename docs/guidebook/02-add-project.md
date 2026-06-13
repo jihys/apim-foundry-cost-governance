@@ -67,7 +67,7 @@ terraform output foundry_project_endpoints
 
 수동 추가가 필요한 경우에도 `terraform.tfvars`에 프로젝트 이름을 추가하고 `terraform apply`를 실행하는 것이 가장 안전합니다. Portal에서 직접 리소스를 생성하는 경우 아래 항목을 모두 수동으로 구성해야 합니다:
 
-1. **Foundry Project 생성:** Azure AI Foundry Hub에서 프로젝트를 추가합니다.
+1. **Foundry Project 생성:** Azure AI Foundry에서 프로젝트를 추가합니다.
 2. **APIM Product 생성:** APIM Instance > Products > + 추가. Product 이름은 Foundry Project 이름과 동일하게 설정합니다.
 3. **APIM Backend 설정:** APIs > + API 추가 > HTTP 선택. 백엔드 URL에 새 Foundry Endpoint URL을 입력합니다.
 4. **User Group 생성:** APIM Instance > 그룹 > + 추가. 이름: `{project}-users`

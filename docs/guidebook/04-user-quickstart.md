@@ -36,6 +36,12 @@ APIM_ENDPOINT=https://<apim-name>.azure-api.net
 
 # Personal Key (Developer Portal → Profile에서 확인)
 APIM_SUBSCRIPTION_KEY=<your-personal-key>
+
+# 모델 배포 이름
+DEPLOYMENT_NAME=gpt-4o
+
+# API 버전
+API_VERSION=2024-12-01-preview
 ```
 
 > **Personal Key 확인 방법:**
@@ -73,7 +79,7 @@ client = AzureOpenAI(
     # APIM Instance를 통해 Foundry Endpoint에 접근
     azure_endpoint=os.getenv("APIM_ENDPOINT"),
     api_key=os.getenv("APIM_SUBSCRIPTION_KEY"),
-    api_version="2024-10-21",
+    api_version="2024-12-01-preview",
 )
 
 response = client.chat.completions.create(

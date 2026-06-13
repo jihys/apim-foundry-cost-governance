@@ -41,7 +41,7 @@ az rest --method put \
     "properties": {
       "en_us": {
         "title": "Welcome",
-        "description": "Welcome to the Coupang AI Platform API Portal",
+        "description": "Welcome to the AI Platform API Portal",
         "content": "## Getting Started\n\n1. **Sign up** for an account using the link above\n2. **Contact your team administrator** to be assigned to your project group\n3. Once assigned, visit the **Products** page to subscribe and get your **Personal API Key**\n4. Use your Personal Key to call the API — see the [User Quickstart Guide](https://github.com/jihys/apim-foundry-cost-governance/blob/main/docs/guidebook/04-user-quickstart.md) for details\n\nNeed help? Contact the AI Platform team."
       }
     }

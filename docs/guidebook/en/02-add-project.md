@@ -67,7 +67,7 @@ Confirm that the new project's Foundry Endpoint has been added.
 
 Even when manual addition is necessary, the safest approach is to add the project name to `terraform.tfvars` and run `terraform apply`. If you must create resources directly in the Portal, you need to configure all of the following manually:
 
-1. **Create the Foundry Project:** Add a project under the Azure AI Foundry Hub.
+1. **Create the Foundry Project:** Add a project under the Azure AI Foundry Resource.
 2. **Create the APIM Product:** APIM Instance > Products > + Add. Set the Product name to match the Foundry Project name.
 3. **Configure the APIM Backend:** APIs > + Add API > select HTTP. Enter the new Foundry Endpoint URL as the backend URL.
 4. **Create the User Group:** APIM Instance > Groups > + Add. Name: `{project}-users`

@@ -138,7 +138,7 @@ Type `yes` to proceed with the deployment.
 
 To activate the Developer Portal after the Terraform deployment:
 
-1. Azure Portal → API Management (`apim-foundry-gw-jihys`) → left menu **Developer portal**
+1. Azure Portal → API Management (`<your-apim-name>`) → left menu **Developer portal**
 2. Click the **"Developer portal"** link in the top toolbar → the admin interface opens in a new tab
 3. After the admin interface loads, switch back to the Azure Portal tab and refresh the page
 4. Click the **"Publish"** button

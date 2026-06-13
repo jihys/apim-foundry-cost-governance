@@ -159,7 +159,7 @@ resource "azurerm_api_management_product" "project" {
   api_management_name   = azurerm_api_management.main.name
   resource_group_name   = var.resource_group_name
   display_name          = each.key
-  description           = "Foundry Model access management for the ${each.key} team. Managed by Coupang AI Platform."
+  description           = "Foundry Model access management for the ${each.key} team. Managed by ${var.publisher_name}."
   subscription_required = true
   subscriptions_limit   = 1
   approval_required     = false
@@ -239,7 +239,7 @@ resource "azurerm_api_management_product_policy" "project" {
             <set-variable name="completionTokens" value="@{var body = (JObject)context.Variables[&quot;responseBody&quot;]; return body[&quot;usage&quot;]?[&quot;completion_tokens&quot;]?.ToString() ?? &quot;0&quot;;}" />
             <set-variable name="totalTokens" value="@{var body = (JObject)context.Variables[&quot;responseBody&quot;]; return body[&quot;usage&quot;]?[&quot;total_tokens&quot;]?.ToString() ?? &quot;0&quot;;}" />
             <set-variable name="modelName" value="@{var body = (JObject)context.Variables[&quot;responseBody&quot;]; return body[&quot;model&quot;]?.ToString() ?? &quot;unknown&quot;;}" />
-            <emit-metric name="TokenUsage" value="1" namespace="apim-foundry">
+            <emit-metric name="TokenUsage" value="@((string)context.Variables[&quot;totalTokens&quot;])" namespace="apim-foundry">
               <dimension name="subscription-id" value="@(context.Subscription.Id)" />
               <dimension name="subscriber" value="@(context.User.Email ?? context.User.Id)" />
               <dimension name="project-name" value="@(context.Product.Name)" />

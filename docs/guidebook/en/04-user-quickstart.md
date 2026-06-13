@@ -36,6 +36,12 @@ APIM_ENDPOINT=https://<apim-name>.azure-api.net
 
 # Personal Key (find it in Developer Portal → Profile)
 APIM_SUBSCRIPTION_KEY=<your-personal-key>
+
+# Model deployment name
+DEPLOYMENT_NAME=gpt-4o
+
+# API version
+API_VERSION=2024-12-01-preview
 ```
 
 > **How to find your Personal Key:**
@@ -73,7 +79,7 @@ client = AzureOpenAI(
     # Access the Foundry Endpoint through the APIM Instance
     azure_endpoint=os.getenv("APIM_ENDPOINT"),
     api_key=os.getenv("APIM_SUBSCRIPTION_KEY"),
-    api_version="2024-10-21",
+    api_version="2024-12-01-preview",
 )
 
 response = client.chat.completions.create(

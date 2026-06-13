@@ -138,7 +138,7 @@ terraform apply
 
 Terraform 배포 후 Developer Portal을 활성화하려면:
 
-1. Azure Portal → API Management (`apim-foundry-gw-jihys`) → 왼쪽 메뉴 **Developer portal**
+1. Azure Portal → API Management (`<your-apim-name>`) → 왼쪽 메뉴 **Developer portal**
 2. 상단 툴바의 **"Developer portal"** 링크 클릭 → 관리 인터페이스가 새 탭에서 열림
 3. 관리 인터페이스 로드 완료 후, Azure Portal 탭으로 돌아가서 페이지 새로고침
 4. **"Publish"** 버튼 클릭

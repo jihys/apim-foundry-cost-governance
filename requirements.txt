@@ -4,5 +4,6 @@ azure-mgmt-resource
 azure-ai-projects
 azure-monitor-query
 python-dotenv
+openai
 requests
 tabulate
