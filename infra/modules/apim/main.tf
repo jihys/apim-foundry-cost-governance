@@ -281,6 +281,15 @@ resource "azurerm_api_management_product_policy" "project" {
               <dimension name="completion-tokens" value="@((string)context.Variables[&quot;completionTokens&quot;])" />
               <dimension name="total-tokens" value="@((string)context.Variables[&quot;totalTokens&quot;])" />
             </emit-metric>
+            <trace source="token-tracking" severity="information">
+              <message>TokenUsage</message>
+              <metadata name="subscriber" value="@(context.User.Email ?? context.User.Id)" />
+              <metadata name="project-name" value="@(context.Product.Name)" />
+              <metadata name="model" value="@((string)context.Variables[&quot;modelName&quot;])" />
+              <metadata name="prompt-tokens" value="@((string)context.Variables[&quot;promptTokens&quot;])" />
+              <metadata name="completion-tokens" value="@((string)context.Variables[&quot;completionTokens&quot;])" />
+              <metadata name="total-tokens" value="@((string)context.Variables[&quot;totalTokens&quot;])" />
+            </trace>
           </when>
         </choose>
       </outbound>

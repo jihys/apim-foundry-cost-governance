@@ -44,7 +44,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "customMetrics\n| where name == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"])\n| summarize TotalTokens = sum(value) by projectName\n| order by TotalTokens desc",
+        "query": "traces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by projectName\n| order by TotalTokens desc",
         "size": 0,
         "title": "프로젝트별 총 토큰 사용량",
         "timeContext": {
@@ -67,7 +67,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "customMetrics\n| where name == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"])\n| summarize TotalTokens = sum(value) by bin(timestamp, 1d), projectName\n| order by timestamp asc",
+        "query": "traces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by bin(timestamp, 1d), projectName\n| order by timestamp asc",
         "size": 0,
         "title": "프로젝트별 일별 추이",
         "timeContext": {
@@ -91,7 +91,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "customMetrics\n| where name == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"])\n| summarize TotalTokens = sum(value) by model\n| order by TotalTokens desc",
+        "query": "traces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by model\n| order by TotalTokens desc",
         "size": 0,
         "title": "모델별 사용량",
         "timeContext": {
@@ -115,7 +115,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "customMetrics\n| where name == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"])\n| summarize TotalTokens = sum(value) by subscriber\n| order by TotalTokens desc",
+              "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by subscriber\n| order by TotalTokens desc",
               "size": 0,
               "title": "사용자별 총 토큰 사용량",
               "timeContext": {
@@ -138,7 +138,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "customMetrics\n| where name == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = value\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by subscriber, projectName\n| order by projectName asc, TotalTokens desc",
+              "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by subscriber, projectName\n| order by projectName asc, TotalTokens desc",
               "size": 0,
               "title": "사용자별 프로젝트별 토큰 사용량",
               "timeContext": {
@@ -183,7 +183,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "customMetrics\n| where name == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = value\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model\n| order by TotalTokens desc",
+              "query": "traces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model\n| order by TotalTokens desc",
               "size": 0,
               "title": "프로젝트별 모델별 토큰 사용량",
               "timeContext": {
