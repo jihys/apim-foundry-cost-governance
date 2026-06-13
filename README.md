@@ -82,16 +82,9 @@ apim-foundry-cost-governance/
 │   └── terraform.tfvars.example
 ├── scripts/                  # 자동화 스크립트
 │   └── setup-portal.sh       # Developer Portal 초기 설정
-├── src/                      # 재사용 모듈
-│   ├── apim/
-│   ├── foundry/
-│   └── monitoring/
-├── docs/                     # 가이드북 & 아키텍처 문서
-│   ├── guidebook/            # Step-by-step 운영 가이드 (한국어)
-│   ├── adr/                  # Architecture Decision Records
-│   └── agents/               # Agent 설정 문서
-├── notebooks/                # 분석 & 데모 노트북
-└── tests/                    # 테스트
+├── docs/
+│   └── guidebook/            # Step-by-step 운영 가이드 (한국어/English)
+└── notebooks/                # 분석 & 데모 노트북
 ```
 
 ## 가이드북

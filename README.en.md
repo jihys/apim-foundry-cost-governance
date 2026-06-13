@@ -82,16 +82,9 @@ apim-foundry-cost-governance/
 │   └── terraform.tfvars.example
 ├── scripts/                  # Automation scripts
 │   └── setup-portal.sh       # Developer Portal bootstrap
-├── src/                      # Reusable modules
-│   ├── apim/
-│   ├── foundry/
-│   └── monitoring/
-├── docs/                     # Guidebook & architecture docs
-│   ├── guidebook/en/         # Step-by-step operations guide (English)
-│   ├── adr/                  # Architecture Decision Records
-│   └── agents/               # Agent configuration docs
-├── notebooks/                # Analysis & demo notebooks
-└── tests/                    # Tests
+├── docs/
+│   └── guidebook/            # Step-by-step operations guide (Korean/English)
+└── notebooks/                # Analysis & demo notebooks
 ```
 
 ## Guidebook
