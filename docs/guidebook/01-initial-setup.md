@@ -1,5 +1,7 @@
 # 초기 설정 가이드
 
+> 🇺🇸 [English Version](en/01-initial-setup.md)
+
 이 가이드는 APIM Foundry Cost Governance 인프라를 처음부터 배포하는 과정을 안내합니다.
 
 ## 사전 요구사항

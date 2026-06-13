@@ -1,5 +1,7 @@
 # 프로젝트 추가 가이드
 
+> 🇺🇸 [English Version](en/02-add-project.md)
+
 새로운 Foundry Project(팀)를 추가하는 방법을 안내합니다. 두 가지 방법이 있으며, **방법 A (Terraform 재실행)**를 권장합니다.
 
 ---

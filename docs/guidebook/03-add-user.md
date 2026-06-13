@@ -1,5 +1,7 @@
 # 사용자 추가 가이드
 
+> 🇺🇸 [English Version](en/03-add-user.md)
+
 기존 Foundry Project에 새 사용자를 추가하는 방법을 안내합니다. 사용자는 Developer Portal에서 등록하고, 관리자가 User Group에 할당한 뒤, 사용자가 직접 Personal Key를 발급받는 흐름입니다.
 
 ## 사전 요구사항

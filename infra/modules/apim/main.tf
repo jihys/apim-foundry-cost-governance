@@ -159,6 +159,7 @@ resource "azurerm_api_management_product" "project" {
   api_management_name   = azurerm_api_management.main.name
   resource_group_name   = var.resource_group_name
   display_name          = each.key
+  description           = "Foundry Model access management for the ${each.key} team. Managed by Coupang AI Platform."
   subscription_required = true
   subscriptions_limit   = 1
   approval_required     = false
