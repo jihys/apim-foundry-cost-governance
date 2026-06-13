@@ -134,28 +134,18 @@ Type `yes` to proceed with the deployment.
 
 <!-- screenshot: terraform apply completion screen -->
 
-### Publish Developer Portal (One-Time, Required)
+### Initialize and Publish Developer Portal (One-Time, Required)
 
-> ⚠️ **Skipping this step causes "Server error. Unable to send request" when users try to Sign up on the Developer Portal.**
+> ⚠️ **Skipping this step makes user Sign up on the Developer Portal impossible.**
 
-Terraform creates the APIM instance, but the Developer Portal content must be published separately.
-
-#### Option A: Azure Portal (Recommended)
+Terraform automatically creates the APIM instance and CORS policy, but the Developer Portal's internal identity system requires an administrator to open the Portal admin UI once to initialize.
 
 1. Azure Portal → API Management (`<your-apim-name>`) → left menu **Developer portal**
 2. Click the **"Developer portal"** link in the top toolbar → the admin interface opens in a new tab
-3. After the admin interface loads, switch back to the Azure Portal tab and refresh the page
-4. Click the **"Publish"** button
+3. Wait for the admin interface to fully load (this initializes the internal identity system)
+4. Switch back to the Azure Portal tab and click the **"Publish"** button
 
-#### Option B: Azure CLI
-
-```bash
-az rest --method PUT \
-  --uri "https://management.azure.com/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ApiManagement/service/<your-apim-name>/portalRevisions/initial-publish?api-version=2022-08-01" \
-  --body '{"properties":{"description":"Initial publish","isCurrent":true}}'
-```
-
-Verify publish status:
+You can also verify publish status via Azure CLI:
 
 ```bash
 az rest --method GET \
@@ -165,36 +155,9 @@ az rest --method GET \
 
 The output should be `completed`.
 
+> CORS is automatically configured by Terraform — no separate setup is needed.
+
 > This step is required only once after the initial deployment. Subsequent API/Product changes are automatically reflected by Terraform.
-
-### Enable CORS (One-Time, Required)
-
-> ⚠️ **Without CORS enabled, all Developer Portal features (Sign up, subscriptions, etc.) fail with "Server error. Unable to send request".**
-
-The Developer Portal makes browser-side calls to the APIM management API. Without a CORS policy, the browser blocks these requests.
-
-#### Option A: Azure Portal
-
-1. Azure Portal → API Management (`<your-apim-name>`) → left menu **Developer portal** → **Portal overview**
-2. Check the **"Enable CORS"** checkbox
-3. Click **"Save"**
-
-#### Option B: Azure CLI
-
-```bash
-DEV_PORTAL_URL=$(az rest --method GET \
-  --uri "https://management.azure.com/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ApiManagement/service/<your-apim-name>?api-version=2022-08-01" \
-  --query properties.developerPortalUrl -o tsv)
-
-az rest --method PUT \
-  --uri "https://management.azure.com/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ApiManagement/service/<your-apim-name>/policies/policy?api-version=2022-08-01" \
-  --body "{
-    \"properties\": {
-      \"format\": \"xml\",
-      \"value\": \"<policies><inbound><cors allow-credentials=\\\"true\\\"><allowed-origins><origin>${DEV_PORTAL_URL}</origin></allowed-origins><allowed-methods preflight-result-max-age=\\\"300\\\"><method>*</method></allowed-methods><allowed-headers><header>*</header></allowed-headers><expose-headers><header>*</header></expose-headers></cors></inbound><backend><forward-request /></backend><outbound /><on-error /></policies>\"
-    }
-  }"
-```
 
 5. (Optional) Welcome message and portal configuration:
    ```bash

@@ -23,6 +23,39 @@ resource "azurerm_api_management" "main" {
 }
 
 # ---------------------------------------------------------------------------
+# Global CORS Policy — allows Developer Portal browser requests to APIM
+# ---------------------------------------------------------------------------
+resource "azurerm_api_management_policy" "global" {
+  api_management_id = azurerm_api_management.main.id
+
+  xml_content = <<-XML
+    <policies>
+      <inbound>
+        <cors allow-credentials="true">
+          <allowed-origins>
+            <origin>${azurerm_api_management.main.developer_portal_url}</origin>
+          </allowed-origins>
+          <allowed-methods preflight-result-max-age="300">
+            <method>*</method>
+          </allowed-methods>
+          <allowed-headers>
+            <header>*</header>
+          </allowed-headers>
+          <expose-headers>
+            <header>*</header>
+          </expose-headers>
+        </cors>
+      </inbound>
+      <backend>
+        <forward-request />
+      </backend>
+      <outbound />
+      <on-error />
+    </policies>
+  XML
+}
+
+# ---------------------------------------------------------------------------
 # App Insights Logger — connects APIM to App Insights Telemetry
 # ---------------------------------------------------------------------------
 resource "azurerm_api_management_logger" "app_insights" {

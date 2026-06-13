@@ -134,28 +134,18 @@ terraform apply
 
 <!-- screenshot: terraform apply 완료 화면 -->
 
-### Developer Portal 퍼블리시 (최초 1회, 필수)
+### Developer Portal 초기화 및 퍼블리시 (최초 1회, 필수)
 
-> ⚠️ **이 단계를 건너뛰면 Developer Portal에서 사용자 Sign up 시 "Server error. Unable to send request" 에러가 발생합니다.**
+> ⚠️ **이 단계를 건너뛰면 Developer Portal에서 사용자 Sign up이 불가능합니다.**
 
-Terraform은 APIM 인스턴스를 생성하지만, Developer Portal 콘텐츠는 별도로 퍼블리시해야 합니다.
-
-#### 방법 A: Azure Portal (권장)
+Terraform은 APIM 인스턴스와 CORS 정책을 자동 생성하지만, Developer Portal의 내부 인증 시스템은 관리자가 Portal 관리 UI를 최초 1회 열어야 초기화됩니다.
 
 1. Azure Portal → API Management (`<your-apim-name>`) → 왼쪽 메뉴 **Developer portal**
 2. 상단 툴바의 **"Developer portal"** 링크 클릭 → 관리 인터페이스가 새 탭에서 열림
-3. 관리 인터페이스 로드 완료 후, Azure Portal 탭으로 돌아가서 페이지 새로고침
-4. **"Publish"** 버튼 클릭
+3. 관리 인터페이스가 완전히 로드될 때까지 대기 (이 과정에서 내부 인증 시스템이 초기화됩니다)
+4. Azure Portal 탭으로 돌아가서 **"Publish"** 버튼 클릭
 
-#### 방법 B: Azure CLI
-
-```bash
-az rest --method PUT \
-  --uri "https://management.azure.com/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ApiManagement/service/<your-apim-name>/portalRevisions/initial-publish?api-version=2022-08-01" \
-  --body '{"properties":{"description":"Initial publish","isCurrent":true}}'
-```
-
-퍼블리시 상태 확인:
+퍼블리시 상태는 Azure CLI로도 확인할 수 있습니다:
 
 ```bash
 az rest --method GET \
@@ -165,36 +155,9 @@ az rest --method GET \
 
 `completed`가 출력되면 성공입니다.
 
+> CORS는 Terraform이 자동 설정하므로 별도 설정이 필요 없습니다.
+
 > 이 과정은 최초 배포 시 1회만 필요합니다. 이후 API/Product 변경은 Terraform이 자동 반영합니다.
-
-### CORS 활성화 (최초 1회, 필수)
-
-> ⚠️ **CORS가 활성화되지 않으면 Developer Portal에서 Sign up, 구독 등 모든 기능이 "Server error. Unable to send request" 에러와 함께 실패합니다.**
-
-Developer Portal은 브라우저에서 APIM 관리 API를 호출합니다. CORS 정책이 없으면 브라우저가 이 요청을 차단합니다.
-
-#### 방법 A: Azure Portal
-
-1. Azure Portal → API Management (`<your-apim-name>`) → 왼쪽 메뉴 **Developer portal** → **Portal overview**
-2. **"Enable CORS"** 체크박스 선택
-3. **"Save"** 클릭
-
-#### 방법 B: Azure CLI
-
-```bash
-DEV_PORTAL_URL=$(az rest --method GET \
-  --uri "https://management.azure.com/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ApiManagement/service/<your-apim-name>?api-version=2022-08-01" \
-  --query properties.developerPortalUrl -o tsv)
-
-az rest --method PUT \
-  --uri "https://management.azure.com/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.ApiManagement/service/<your-apim-name>/policies/policy?api-version=2022-08-01" \
-  --body "{
-    \"properties\": {
-      \"format\": \"xml\",
-      \"value\": \"<policies><inbound><cors allow-credentials=\\\"true\\\"><allowed-origins><origin>${DEV_PORTAL_URL}</origin></allowed-origins><allowed-methods preflight-result-max-age=\\\"300\\\"><method>*</method></allowed-methods><allowed-headers><header>*</header></allowed-headers><expose-headers><header>*</header></expose-headers></cors></inbound><backend><forward-request /></backend><outbound /><on-error /></policies>\"
-    }
-  }"
-```
 
 5. (선택) 웰컴 메시지 및 포탈 설정:
    ```bash
