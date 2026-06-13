@@ -151,6 +151,58 @@ Terraform 배포 후 Developer Portal을 활성화하려면:
    ```
    이 스크립트는 신규 사용자를 위한 가이드 메시지를 설정하고 포탈을 재publish합니다.
 
+## 트러블슈팅: 첫 배포 시 알려진 에러
+
+첫 `terraform apply` 실행 시 다음 에러가 발생할 수 있습니다. 대부분 일시적이며 재실행으로 해결됩니다.
+
+### APIM 401 Unauthorized
+
+APIM 리소스 생성(약 33분 소요) 직후 azurerm provider가 APIM API를 조회할 때 401 에러가 발생할 수 있습니다. APIM 내부 초기화가 완전히 완료되지 않은 상태에서 발생하는 일시적 에러입니다.
+
+**해결 방법:** 2~3분 대기 후 `terraform apply`를 다시 실행합니다.
+
+### 모델 배포 409 Conflict
+
+여러 모델 배포가 병렬로 실행되지만, Azure ARM은 동일한 Cognitive Services 계정에 대한 쓰기 작업을 직렬화합니다. 이로 인해 동시 배포 시 409 Conflict가 발생할 수 있습니다.
+
+**해결 방법:** `terraform apply`를 다시 실행합니다. 이미 생성된 모델은 건너뛰므로 두 번째 실행에서 성공합니다.
+
+**대안:** `terraform apply -parallelism=1` 으로 실행하면 병렬 충돌을 방지할 수 있습니다 (속도가 느려집니다).
+
+### 복합 에러 복구
+
+두 에러가 동시에 발생하면 2회 재시도가 필요할 수 있습니다:
+
+```bash
+terraform apply    # 401 + 409 에러 발생 가능
+# 2~3분 대기
+terraform apply    # 나머지 리소스 생성 완료
+```
+
+### 재배포 시 주의사항 (Soft-Delete)
+
+`terraform destroy` 후 동일 이름으로 재배포하면 충돌이 발생할 수 있습니다. Azure에서 삭제된 리소스가 일정 기간 soft-delete 상태로 유지되기 때문입니다.
+
+**Foundry (Cognitive Services) 계정:**
+삭제 후 48시간 동안 soft-delete 상태로 유지됩니다. 동일 이름으로 재생성하려면 먼저 purge해야 합니다:
+
+```bash
+az cognitiveservices account purge \
+  --name <foundry-resource-name> \
+  --resource-group <resource-group> \
+  --location <location>
+```
+
+**APIM:**
+APIM도 soft-delete 상태로 유지될 수 있습니다. 삭제된 APIM 인스턴스 확인 및 purge:
+
+```bash
+az apim deletedservice list -o table
+az apim deletedservice purge \
+  --service-name <apim-name> \
+  --location <location>
+```
+
 ## 4. 배포 확인
 
 ### Terraform 출력 확인
@@ -163,10 +215,12 @@ terraform output foundry_project_endpoints
 
 ```
 {
-  "catalog" = "https://aoai-foundry-catalog.openai.azure.com/"
-  "image"   = "https://aoai-foundry-image.openai.azure.com/"
+  "team-a-project" = "https://{foundry-resource-name}.cognitiveservices.azure.com/"
+  "team-b-project" = "https://{foundry-resource-name}.cognitiveservices.azure.com/"
 }
 ```
+
+> **참고:** 모든 Foundry Project는 동일한 부모 Foundry 리소스의 엔드포인트를 공유합니다. `{foundry-resource-name}`은 `terraform.tfvars`에서 설정한 `foundry_resource_name` 값입니다.
 
 ### Azure Portal에서 확인
 

@@ -151,6 +151,58 @@ To activate the Developer Portal after the Terraform deployment:
    ```
    This script sets up a guide message for new users and re-publishes the portal.
 
+## Troubleshooting: Known Errors on First Deploy
+
+The first `terraform apply` may encounter the following errors. These are transient and resolve with a re-run.
+
+### APIM 401 Unauthorized
+
+After APIM resource creation completes (~33 minutes), the azurerm provider may receive a 401 error when listing APIM APIs. This is a transient error caused by APIM internal initialization not being fully complete.
+
+**Solution:** Wait 2–3 minutes, then re-run `terraform apply`.
+
+### Model Deployment 409 Conflict
+
+Multiple model deployments run in parallel, but Azure ARM serializes write operations to the same Cognitive Services account. This can cause 409 Conflict errors during concurrent deployments.
+
+**Solution:** Re-run `terraform apply`. Already-created models are skipped, so the second run succeeds.
+
+**Alternative:** Run `terraform apply -parallelism=1` to avoid parallel conflicts (slower but avoids the error).
+
+### Combined Error Recovery
+
+If both errors occur simultaneously, you may need up to 2 retries:
+
+```bash
+terraform apply    # may fail with 401 + 409
+# wait 2-3 minutes
+terraform apply    # creates remaining resources
+```
+
+### Re-deployment Notes (Soft-Delete)
+
+After `terraform destroy`, re-deploying with the same resource names may fail with a conflict. This happens because Azure keeps deleted resources in a soft-delete state for a retention period.
+
+**Foundry (Cognitive Services) account:**
+Retained in soft-delete state for 48 hours after deletion. You must purge before re-creating with the same name:
+
+```bash
+az cognitiveservices account purge \
+  --name <foundry-resource-name> \
+  --resource-group <resource-group> \
+  --location <location>
+```
+
+**APIM:**
+APIM instances may also be retained in soft-delete state. Check and purge deleted instances:
+
+```bash
+az apim deletedservice list -o table
+az apim deletedservice purge \
+  --service-name <apim-name> \
+  --location <location>
+```
+
 ## 4. Verify the Deployment
 
 ### Check Terraform Outputs
@@ -163,10 +215,12 @@ The Foundry Endpoint URL for each Foundry Project will be displayed:
 
 ```
 {
-  "catalog" = "https://aoai-foundry-catalog.openai.azure.com/"
-  "image"   = "https://aoai-foundry-image.openai.azure.com/"
+  "team-a-project" = "https://{foundry-resource-name}.cognitiveservices.azure.com/"
+  "team-b-project" = "https://{foundry-resource-name}.cognitiveservices.azure.com/"
 }
 ```
+
+> **Note:** All Foundry Projects share the same parent Foundry resource endpoint. `{foundry-resource-name}` corresponds to the `foundry_resource_name` value in your `terraform.tfvars`.
 
 ### Verify in the Azure Portal
 
