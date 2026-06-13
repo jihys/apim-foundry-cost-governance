@@ -217,7 +217,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"https://prices.azure.com/api/retail/prices\",\"urlParams\":[{\"key\":\"$filter\",\"value\":\"serviceName eq 'Azure OpenAI' and armRegionName eq '${location}'\"}],\"batchSize\":20,\"workspaceFilters\":{},\"resultFormat\":\"table\"}",
+              "query": "{\"version\":\"ARMEndpoint/1.0\",\"data\":null,\"headers\":[],\"method\":\"GET\",\"path\":\"https://prices.azure.com/api/retail/prices\",\"urlParams\":[{\"key\":\"api-version\",\"value\":\"2023-01-01-preview\"},{\"key\":\"$filter\",\"value\":\"serviceName eq 'Azure OpenAI' and armRegionName eq '${location}'\"}],\"batchSize\":20,\"workspaceFilters\":{},\"resultFormat\":\"table\"}",
               "size": 1,
               "title": "Azure OpenAI 모델별 단가 (Azure Retail Prices)",
               "queryType": 12,
