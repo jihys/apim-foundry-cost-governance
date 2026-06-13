@@ -1,34 +1,22 @@
 # 사용자 추가 가이드
 
-기존 Foundry Project에 새 팀원을 추가하는 방법을 안내합니다. 사용자는 APIM Developer Portal에서 등록되며, 해당 User Group에 할당됩니다.
+기존 Foundry Project에 새 사용자를 추가하는 방법을 안내합니다. 사용자는 Developer Portal에서 등록하고, 관리자가 User Group에 할당한 뒤, 사용자가 직접 Personal Key를 발급받는 흐름입니다.
 
 ## 사전 요구사항
 
-- APIM Instance가 배포되어 있어야 합니다 ([초기 설정 가이드](01-initial-setup.md) 참고)
+- APIM Instance + Developer Portal 배포 완료 ([초기 설정 가이드](01-initial-setup.md) 참고)
 - 추가할 사용자의 이메일 주소
 - 사용자가 속할 Foundry Project(= User Group) 이름
 
-## 1. APIM Developer Portal에서 사용자 등록
+## 1. 사용자 등록
 
-### 관리자가 직접 등록하는 방법
+### 방법 A: 사용자 셀프서비스 등록 (권장)
 
-1. [Azure Portal](https://portal.azure.com)에서 APIM Instance로 이동
-2. 왼쪽 메뉴에서 **사용자** 클릭
-3. **+ 추가** 클릭
-4. 사용자 정보 입력:
-   - **이메일**: 사용자 이메일 주소
-   - **이름**: 사용자 이름
-   - **암호**: 초기 비밀번호 설정 (사용자가 변경 가능)
+사용자에게 Developer Portal URL을 안내합니다:
 
-<!-- screenshot: APIM 사용자 추가 화면 -->
-
-5. **만들기** 클릭
-
-### 사용자가 셀프서비스로 등록하는 방법
-
-APIM Developer Portal이 활성화된 경우, 사용자가 직접 가입할 수 있습니다:
-
-> **Developer Portal URL 확인:** `cd infra && terraform output apim_developer_portal_url`
+```bash
+cd infra && terraform output apim_developer_portal_url
+```
 
 1. Developer Portal URL 접속
 2. **Sign up** 클릭
@@ -37,64 +25,63 @@ APIM Developer Portal이 활성화된 경우, 사용자가 직접 가입할 수 
 
 <!-- screenshot: Developer Portal 회원가입 화면 -->
 
-> **참고:** 셀프서비스 등록 후에도 관리자가 User Group에 할당해야 API에 접근할 수 있습니다.
+### 방법 B: 관리자 직접 등록
 
-## 2. User Group에 할당
+사용자가 직접 가입하기 어려운 경우 관리자가 등록할 수 있습니다:
 
-각 Foundry Project에는 대응하는 User Group이 있습니다. 사용자를 올바른 그룹에 할당해야 해당 프로젝트의 API에 접근할 수 있습니다.
+1. [Azure Portal](https://portal.azure.com)에서 APIM Instance로 이동
+2. 왼쪽 메뉴에서 **사용자** 클릭
+3. **+ 추가** 클릭
+4. 사용자 정보 입력 (이메일, 이름, 초기 비밀번호)
+5. **만들기** 클릭
 
-1. APIM Instance > **그룹** 클릭
-2. 해당 Foundry Project의 User Group 선택 (예: `catalog`, `image`)
-3. **+ 구성원 추가** 클릭
-4. 등록한 사용자를 검색하여 추가
+<!-- screenshot: APIM 사용자 추가 화면 -->
+
+## 2. User Group에 할당 (관리자)
+
+등록된 사용자를 해당 Foundry Project의 User Group에 할당합니다:
+
+1. Azure Portal → APIM Instance → **그룹**
+2. 해당 프로젝트 그룹 선택 (예: `catalog-project-users`)
+3. **+ 구성원 추가** → 사용자 검색 → 추가
 
 <!-- screenshot: APIM User Group 구성원 추가 화면 -->
 
-## 3. APIM Subscription Key 공유
+> **이 할당이 곧 승인 행위입니다.** 별도의 승인 절차 없이, 그룹에 할당된 사용자만 해당 Product에 구독할 수 있습니다.
 
-사용자에게 해당 Foundry Project의 APIM Subscription Key를 전달합니다.
+## 3. 사용자에게 안내
 
-### Terraform으로 키 확인
+사용자에게 다음 절차를 안내합니다:
+
+1. Developer Portal 로그인
+2. **Products** 메뉴에서 자신의 프로젝트 Product 선택
+3. **"Subscribe"** 클릭 → Personal Key 즉시 발급
+4. **Profile** 페이지에서 Personal Key 확인
+
+<!-- screenshot: Developer Portal Products 구독 화면 -->
+
+> 사용자당 Product별 1개의 Personal Key만 발급 가능합니다 (`subscriptions_limit = 1`).
+
+사용자가 Personal Key를 확인한 후 [사용자 퀵스타트 가이드](04-user-quickstart.md)를 전달하여 API 호출을 시작하도록 안내합니다.
+
+## 4. Service Key (CI/CD용)
+
+자동화 스크립트, CI/CD 파이프라인 등 시스템 용도로는 Terraform이 생성한 Service Key를 사용합니다:
 
 ```bash
-cd infra
 terraform output -json apim_subscription_keys
 ```
 
-### Azure Portal에서 키 확인
+각 프로젝트의 Service Key는 `{project}-service-key` 형식으로 표시됩니다.
 
-1. APIM Instance > **구독** 클릭
-2. 해당 Foundry Project의 APIM Subscription 선택
-3. **기본 키 표시** 클릭하여 키 확인
+> **Service Key는 사람이 직접 사용하지 않습니다.** 개발자는 반드시 Personal Key를 사용하세요.
 
-<!-- screenshot: APIM Subscription Key 확인 화면 -->
+## 5. Personal Key 재발급
 
-> **보안 주의:** APIM Subscription Key는 팀 내에서만 공유합니다. 하나의 키를 Foundry Project 팀원 전체가 공유하며, 프로젝트별 Token Usage 추적의 기본 단위가 됩니다.
+키가 유출된 경우 사용자가 직접 재발급할 수 있습니다:
 
-## 4. 사용자 셀프서비스 안내
-
-등록된 사용자에게 아래 내용을 안내합니다:
-
-### APIM Subscription Key 확인 (Developer Portal)
-
-1. Developer Portal 접속 (`terraform output apim_developer_portal_url`로 URL 확인)
-2. 로그인 후 **프로필** 메뉴 클릭
-3. 할당된 APIM Subscription의 키 확인 가능
-
-<!-- screenshot: Developer Portal 프로필에서 Subscription Key 확인 -->
-
-### APIM Subscription Key 재발급
-
-키가 유출된 경우 재발급할 수 있습니다:
-
-1. Developer Portal > **프로필** > 해당 APIM Subscription
+1. Developer Portal → **Profile** → 해당 Subscription
 2. **기본 키 재생성** 또는 **보조 키 재생성** 클릭
 3. 기존 키는 즉시 무효화됩니다
 
-<!-- screenshot: Developer Portal 키 재발급 화면 -->
-
-> **참고:** 키 재발급 시 해당 Foundry Project의 모든 팀원에게 새 키를 공유해야 합니다. 보조 키를 먼저 재발급하고 배포한 후 기본 키를 재발급하면 무중단 교체가 가능합니다.
-
-## 다음 단계
-
-사용자에게 [사용자 퀵스타트 가이드](04-user-quickstart.md)를 전달하여 API 호출을 시작하도록 안내합니다.
+> Personal Key는 개인별로 독립되어 있어, 재발급 시 본인의 키만 영향을 받습니다. 다른 팀원에게 영향이 없습니다.

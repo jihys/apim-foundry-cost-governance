@@ -1,10 +1,10 @@
 # 사용자 퀵스타트
 
-APIM Subscription Key를 받은 후, API 호출을 시작하는 방법을 안내합니다.
+Personal Key를 발급받은 후, API 호출을 시작하는 방법을 안내합니다.
 
 ## 사전 요구사항
 
-- APIM Subscription Key를 관리자로부터 전달받았거나, Developer Portal에서 확인한 상태
+- Developer Portal에서 Product에 구독하여 Personal Key를 발급받은 상태 ([사용자 추가 가이드](03-add-user.md) 참고)
 - Python 3.10+ 설치
 - `openai` Python 패키지 설치: `pip install openai`
 
@@ -22,17 +22,14 @@ cp sample.env .env
 # APIM Instance 엔드포인트
 APIM_ENDPOINT=https://<apim-name>.azure-api.net
 
-# APIM Subscription Key (관리자로부터 전달받은 키)
-APIM_SUBSCRIPTION_KEY=<your-subscription-key>
+# Personal Key (Developer Portal → Profile에서 확인)
+APIM_SUBSCRIPTION_KEY=<your-personal-key>
 ```
 
-> **Terraform으로 값 확인:**
-> ```bash
-> cd infra
-> terraform output apim_endpoint                # APIM_ENDPOINT 값
-> terraform output apim_developer_portal_url     # Developer Portal URL
-> terraform output -json apim_subscription_keys  # APIM_SUBSCRIPTION_KEY 값
-> ```
+> **Personal Key 확인 방법:**
+> 1. Developer Portal 접속 (`terraform output apim_developer_portal_url`로 URL 확인)
+> 2. 로그인 → **Profile** 메뉴
+> 3. 구독한 Product의 Subscription Key 확인
 
 > **주의:** `.env` 파일은 `.gitignore`에 포함되어 있어 Git에 커밋되지 않습니다. APIM Subscription Key를 코드에 하드코딩하지 마세요.
 
@@ -78,7 +75,7 @@ print(response.choices[0].message.content)
 
 > **핵심 포인트:**
 > - `azure_endpoint`에 APIM Instance URL을 사용합니다 (Foundry Endpoint 직접 접근 아님)
-> - `api_key`에 APIM Subscription Key를 사용합니다 (Project API Key 아님)
+> - `api_key`에 Personal Key를 사용합니다 (Service Key나 Project API Key 아님)
 > - APIM이 내부적으로 해당 Foundry Project의 Foundry Endpoint로 라우팅합니다
 
 ## 4. 호출 확인
@@ -93,32 +90,18 @@ print(response.choices[0].message.content)
 
 | 오류 코드 | 원인 | 해결 방법 |
 |-----------|------|-----------|
-| `401 Unauthorized` | 잘못된 APIM Subscription Key | 키를 다시 확인하세요 |
-| `403 Forbidden` | User Group에 할당되지 않음 | 관리자에게 User Group 할당 요청 |
+| `401 Unauthorized` | 잘못된 Personal Key | Developer Portal → Profile에서 키를 다시 확인하세요 |
+| `403 Forbidden` | User Group에 할당되지 않았거나 Product에 구독하지 않음 | 관리자에게 User Group 할당 요청 후, Developer Portal에서 Product 구독 |
 | `404 Not Found` | 잘못된 엔드포인트 또는 모델명 | `APIM_ENDPOINT`와 `model` 파라미터 확인 |
 | `429 Too Many Requests` | Rate limit 초과 | 잠시 후 재시도하거나 관리자에게 한도 조정 요청 |
 
-## 5. 확장: Custom User Header
+## 5. 사용자별 Token Usage 추적
 
-프로젝트 내에서 개별 사용자별 Token Usage를 추적해야 하는 경우, 요청에 `x-user-id` 커스텀 헤더를 포함할 수 있습니다:
+Personal Key를 사용하면 사용자별 Token Usage가 자동으로 추적됩니다. APIM Policy가 각 요청의 `subscriber` 정보(사용자 이메일)를 App Insights Telemetry에 기록하므로, 별도의 커스텀 헤더 없이 Cost Dashboard에서 사용자별 사용량을 확인할 수 있습니다.
 
-```python
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "user", "content": "Hello!"},
-    ],
-    extra_headers={
-        "x-user-id": "alice@company.com",
-    },
-)
-```
-
-APIM Policy가 이 Custom User Header 값을 App Insights Telemetry에 기록하여, Cost Dashboard에서 사용자별 Token Usage를 확인할 수 있습니다.
-
-> **참고:** Custom User Header는 선택 사항이며, 초기 배포에는 포함되지 않습니다. 관리자가 APIM Policy를 구성한 후 사용 가능합니다.
+> **참고:** 기존 `x-user-id` 커스텀 헤더는 더 이상 필요하지 않습니다. Personal Key 방식으로 전환하면서 사용자 식별이 Subscription 단위로 자동 처리됩니다.
 
 ## 다음 단계
 
-- **Token Usage 확인:** 관리자에게 Cost Dashboard 접근 권한을 요청하여 프로젝트별 사용량을 확인합니다
-- **APIM Subscription Key 재발급:** 키가 유출된 경우 Developer Portal에서 재발급할 수 있습니다 ([사용자 추가 가이드](03-add-user.md) 참고)
+- **Token Usage 확인:** 관리자에게 Cost Dashboard 접근 권한을 요청하여 프로젝트별/사용자별 사용량을 확인합니다
+- **Personal Key 재발급:** 키가 유출된 경우 Developer Portal에서 재발급할 수 있습니다 ([사용자 추가 가이드](03-add-user.md) 참고)

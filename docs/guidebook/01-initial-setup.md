@@ -64,24 +64,22 @@ location            = "koreacentral"
 
 # APIM Instance 설정
 apim_name = "apim-foundry-gw"
-apim_sku  = "Developer"  # 프로덕션 환경에서는 Standard_v2 권장
+apim_sku  = "Developer_1"  # 프로덕션 환경에서는 StandardV2_1 권장
 
-# Foundry Projects — 팀별로 하나씩 정의
-foundry_projects = [
+# Foundry Projects — 팀별로 하나씩 정의 (단순 문자열 리스트)
+foundry_projects = ["catalog-project", "image-project"]
+
+# 공유 모델 배포
+model_deployments = [
   {
-    name           = "catalog"
-    models         = ["gpt-4o"]
-    rate_limit_tpm = null  # null = 기본값 10000 TPM
-  },
-  {
-    name           = "image"
-    models         = ["gpt-4o", "dall-e-3"]
-    rate_limit_tpm = null
+    name          = "gpt-4o"
+    model_name    = "gpt-4o"
+    model_version = "2024-11-20"
   }
 ]
 ```
 
-> **참고:** `apim_sku`는 초기 개발 시 `Developer`를 사용하고, 프로덕션 배포 시 `Standard_v2`로 변경합니다. Developer SKU는 SLA가 제공되지 않습니다.
+> **참고:** `apim_sku`는 초기 개발 시 `Developer_1`을 사용하고, 프로덕션 배포 시 `StandardV2_1`로 변경합니다. Developer SKU는 SLA가 제공되지 않습니다.
 
 ## 3. Terraform 배포
 
@@ -161,18 +159,18 @@ terraform output foundry_project_endpoints
 
 <!-- screenshot: Azure Portal 리소스 그룹 내 리소스 목록 -->
 
-## 5. APIM Subscription Key 확인
+## 5. Service Key 확인 (CI/CD용)
 
-> **참고:** APIM Instance는 후속 이슈에서 배포됩니다. APIM이 배포된 후에 아래 명령으로 APIM Subscription Key를 확인할 수 있습니다:
+Terraform은 각 Foundry Project에 대해 **Service Key**를 자동 생성합니다. Service Key는 CI/CD 파이프라인, 자동화 스크립트 등 시스템 용도로만 사용하며, 사람이 직접 사용하지 않습니다.
 
 ```bash
 terraform output -json apim_subscription_keys
 ```
 
-각 Foundry Project당 하나의 APIM Subscription Key가 발급되며, 해당 팀원이 공유합니다.
+> **참고:** 개발자 개인은 Developer Portal에서 셀프서비스로 **Personal Key**를 발급받아 사용합니다. 자세한 내용은 [사용자 추가 가이드](03-add-user.md)를 참고하세요.
 
 ## 다음 단계
 
 - [프로젝트 추가 가이드](02-add-project.md) — 새 Foundry Project 추가 방법
-- [사용자 추가 가이드](03-add-user.md) — 팀원을 User Group에 등록
-- [사용자 퀵스타트](04-user-quickstart.md) — APIM Subscription Key를 받은 후 API 호출 시작
+- [사용자 추가 가이드](03-add-user.md) — 사용자 등록 및 User Group 할당, Personal Key 발급 안내
+- [사용자 퀵스타트](04-user-quickstart.md) — Personal Key로 API 호출 시작
