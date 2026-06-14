@@ -138,9 +138,9 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by subscriber, projectName\n| order by projectName asc, TotalTokens desc",
+              "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         model = tostring(customDimensions[\"model\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| extend modelBase = case(\n    model startswith 'gpt-4o', 'gpt-4o',\n    model startswith 'gpt-5.2', 'gpt-5.2',\n    model startswith 'gpt-5.4', 'gpt-5.4',\n    model startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| lookup pricing on modelBase\n| extend cost = (promptTokens * inputPrice + completionTokens * outputPrice) / 1000000\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens),\n            EstimatedCost_USD = round(sum(cost), 4)\n         by subscriber\n| order by EstimatedCost_USD desc",
               "size": 0,
-              "title": "Token Usage by User and Project",
+              "title": "Token Usage and Cost by User",
               "timeContext": {
                 "durationMs": 0
               },
@@ -162,11 +162,73 @@
                         "maximumFractionDigits": 0
                       }
                     }
+                  },
+                  {
+                    "columnMatch": "EstimatedCost_USD",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "currency",
+                        "currency": "USD",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 4,
+                        "maximumFractionDigits": 4
+                      }
+                    }
                   }
                 ]
               }
             },
-            "name": "tokensBySubscriberProject"
+            "name": "tokensCostByUser"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"]),\n         model = tostring(customDimensions[\"model\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| extend modelBase = case(\n    model startswith 'gpt-4o', 'gpt-4o',\n    model startswith 'gpt-5.2', 'gpt-5.2',\n    model startswith 'gpt-5.4', 'gpt-5.4',\n    model startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| lookup pricing on modelBase\n| extend cost = (promptTokens * inputPrice + completionTokens * outputPrice) / 1000000\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens),\n            EstimatedCost_USD = round(sum(cost), 4)\n         by projectName\n| order by EstimatedCost_USD desc",
+              "size": 0,
+              "title": "Token Usage and Cost by Project",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "visualization": "table",
+              "showExportToExcel": true,
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "PromptTokens|CompletionTokens|TotalTokens",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "maximumFractionDigits": 0
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "EstimatedCost_USD",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "currency",
+                        "currency": "USD",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 4,
+                        "maximumFractionDigits": 4
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "tokensCostByProject"
           }
         ]
       },
@@ -183,7 +245,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let pricing = datatable(model:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model\n| lookup pricing on model\n| extend EstimatedCost_USD = round((PromptTokens * inputPrice + CompletionTokens * outputPrice) / 1000000, 4)\n| project projectName, model, PromptTokens, CompletionTokens, TotalTokens, EstimatedCost_USD\n| order by EstimatedCost_USD desc",
+              "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| extend modelBase = extract(@'^([a-zA-Z]+-[\\w.]+-?[\\d.]*)', 1, model)\n| extend modelBase = case(\n    modelBase startswith 'gpt-4o', 'gpt-4o',\n    modelBase startswith 'gpt-5.2', 'gpt-5.2',\n    modelBase startswith 'gpt-5.4', 'gpt-5.4',\n    modelBase startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model, modelBase\n| lookup pricing on modelBase\n| extend EstimatedCost_USD = round((PromptTokens * inputPrice + CompletionTokens * outputPrice) / 1000000, 4)\n| project projectName, model, PromptTokens, CompletionTokens, TotalTokens, EstimatedCost_USD\n| order by EstimatedCost_USD desc",
               "size": 0,
               "title": "Token Usage and Estimated Cost by Project and Model",
               "timeContext": {
