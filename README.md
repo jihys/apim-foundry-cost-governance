@@ -7,50 +7,71 @@ Azure API Management(APIM)를 AI Foundry 앞단 게이트웨이로 배치하여,
 ## 아키텍처
 
 ```mermaid
-flowchart LR
-    subgraph Users["팅별 사용자"]
-        U1["👤 User A\n(catalog팀)"]
-        U2["👤 User B\n(catalog팀)"]
-        U3["👤 User C\n(image팀)"]
+flowchart TB
+    subgraph Users[" "]
+        direction LR
+        U1["👤 User A"]
+        U2["👤 User B"]
+        U3["👤 User C"]
     end
 
-    subgraph APIM["APIM Gateway"]
-        direction TB
-        PK1["Personal Key A"]
-        PK2["Personal Key B"]
-        PK3["Personal Key C"]
-        subgraph Products["프로젝트별 Product"]
-            P1["catalog-project\n(User Group: catalog)"]
-            P2["image-project\n(User Group: image)"]
+    subgraph Azure["Azure"]
+        subgraph APIM["API Management Gateway"]
+            direction TB
+            Portal["🌐 Developer Portal\n키 발급 · 구독 관리"]
+            subgraph Keys["Subscription Keys"]
+                direction LR
+                SK1["🔑 Service Key\n(CI/CD 자동화용)"]
+                PK1["🔑 Personal Key A"]
+                PK2["🔑 Personal Key B"]
+                PK3["🔑 Personal Key C"]
+            end
+            subgraph Routing["Products  ←  User Groups"]
+                direction LR
+                P1["catalog-project\n👥 catalog-group"]
+                P2["image-project\n👥 image-group"]
+            end
+            Policy["📋 APIM Policy\n인증 · 라우팅 · Rate Limit\n토큰 사용량 추출"]
+        end
+
+        subgraph Foundry["AI Foundry Resource"]
+            direction TB
+            subgraph Endpoints["Foundry Projects (Endpoints)"]
+                direction LR
+                FP1["catalog-project\n🔗 Endpoint"]
+                FP2["image-project\n🔗 Endpoint"]
+            end
+            subgraph Models["공유 모델 배포"]
+                direction LR
+                M1["gpt-4o"]
+                M2["gpt-5.2"]
+                M3["gpt-5.4"]
+            end
+        end
+
+        subgraph Monitor["모니터링"]
+            direction LR
+            AI["📡 Application Insights\ntraces 테이블"]
+            WB["📊 Cost Workbook\n사용자별 · 프로젝트별 · 모델별"]
         end
     end
 
-    subgraph Foundry["AI Foundry Resource"]
-        FP1["catalog-project\nEndpoint"]
-        FP2["image-project\nEndpoint"]
-        subgraph Models["공유 모델 배포"]
-            M1["gpt-4o"]
-            M2["gpt-5.2"]
-        end
-    end
-
-    subgraph Monitoring["모니터링"]
-        AI["App Insights\n(traces 테이블)"]
-        WB["📊 Cost Dashboard\n(Workbook)"]
-    end
-
-    U1 -->|Personal Key A| PK1
-    U2 -->|Personal Key B| PK2
-    U3 -->|Personal Key C| PK3
-    PK1 --> P1
-    PK2 --> P1
+    U1 & U2 -->|"api-key 헤더"| APIM
+    U3 -->|"api-key 헤더"| APIM
+    Portal -.->|"셀프서비스"| Keys
+    PK1 & PK2 --> P1
     PK3 --> P2
-    P1 -->|Backend Routing| FP1
-    P2 -->|Backend Routing| FP2
-    FP1 --> Models
-    FP2 --> Models
-    APIM -->|"토큰 사용량\n(사용자/프로젝트/모델)"| AI
+    P1 -->|Backend| FP1
+    P2 -->|Backend| FP2
+    FP1 & FP2 --> Models
+    Policy -->|"로그"| AI
     AI --> WB
+
+    style Users fill:none,stroke:none
+    style Azure fill:#e8f4fd,stroke:#0078d4,stroke-width:2px
+    style APIM fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    style Foundry fill:#d4edda,stroke:#28a745,stroke-width:2px
+    style Monitor fill:#f8d7da,stroke:#dc3545,stroke-width:2px
 ```
 
 ### 키 동작 방식

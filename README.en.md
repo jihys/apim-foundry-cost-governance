@@ -7,50 +7,71 @@ This project deploys Azure API Management (APIM) as a gateway in front of AI Fou
 ## Architecture
 
 ```mermaid
-flowchart LR
-    subgraph Users["Team Users"]
-        U1["👤 User A\n(catalog team)"]
-        U2["👤 User B\n(catalog team)"]
-        U3["👤 User C\n(image team)"]
+flowchart TB
+    subgraph Users[" "]
+        direction LR
+        U1["👤 User A"]
+        U2["👤 User B"]
+        U3["👤 User C"]
     end
 
-    subgraph APIM["APIM Gateway"]
-        direction TB
-        PK1["Personal Key A"]
-        PK2["Personal Key B"]
-        PK3["Personal Key C"]
-        subgraph Products["Per-Project Products"]
-            P1["catalog-project\n(User Group: catalog)"]
-            P2["image-project\n(User Group: image)"]
+    subgraph Azure["Azure"]
+        subgraph APIM["API Management Gateway"]
+            direction TB
+            Portal["🌐 Developer Portal\nKey issuance · Subscription mgmt"]
+            subgraph Keys["Subscription Keys"]
+                direction LR
+                SK1["🔑 Service Key\n(CI/CD automation)"]
+                PK1["🔑 Personal Key A"]
+                PK2["🔑 Personal Key B"]
+                PK3["🔑 Personal Key C"]
+            end
+            subgraph Routing["Products  ←  User Groups"]
+                direction LR
+                P1["catalog-project\n👥 catalog-group"]
+                P2["image-project\n👥 image-group"]
+            end
+            Policy["📋 APIM Policy\nAuth · Routing · Rate Limit\nToken usage extraction"]
+        end
+
+        subgraph Foundry["AI Foundry Resource"]
+            direction TB
+            subgraph Endpoints["Foundry Projects (Endpoints)"]
+                direction LR
+                FP1["catalog-project\n🔗 Endpoint"]
+                FP2["image-project\n🔗 Endpoint"]
+            end
+            subgraph Models["Shared Model Deployments"]
+                direction LR
+                M1["gpt-4o"]
+                M2["gpt-5.2"]
+                M3["gpt-5.4"]
+            end
+        end
+
+        subgraph Monitor["Monitoring"]
+            direction LR
+            AI["📡 Application Insights\ntraces table"]
+            WB["📊 Cost Workbook\nPer-user · Per-project · Per-model"]
         end
     end
 
-    subgraph Foundry["AI Foundry Resource"]
-        FP1["catalog-project\nEndpoint"]
-        FP2["image-project\nEndpoint"]
-        subgraph Models["Shared Model Deployments"]
-            M1["gpt-4o"]
-            M2["gpt-5.2"]
-        end
-    end
-
-    subgraph Monitoring["Monitoring"]
-        AI["App Insights\n(traces table)"]
-        WB["📊 Cost Dashboard\n(Workbook)"]
-    end
-
-    U1 -->|Personal Key A| PK1
-    U2 -->|Personal Key B| PK2
-    U3 -->|Personal Key C| PK3
-    PK1 --> P1
-    PK2 --> P1
+    U1 & U2 -->|"api-key header"| APIM
+    U3 -->|"api-key header"| APIM
+    Portal -.->|"Self-service"| Keys
+    PK1 & PK2 --> P1
     PK3 --> P2
-    P1 -->|Backend Routing| FP1
-    P2 -->|Backend Routing| FP2
-    FP1 --> Models
-    FP2 --> Models
-    APIM -->|"Token Usage\n(user/project/model)"| AI
+    P1 -->|Backend| FP1
+    P2 -->|Backend| FP2
+    FP1 & FP2 --> Models
+    Policy -->|"Log"| AI
     AI --> WB
+
+    style Users fill:none,stroke:none
+    style Azure fill:#e8f4fd,stroke:#0078d4,stroke-width:2px
+    style APIM fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    style Foundry fill:#d4edda,stroke:#28a745,stroke-width:2px
+    style Monitor fill:#f8d7da,stroke:#dc3545,stroke-width:2px
 ```
 
 ### How Keys Work
