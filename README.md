@@ -6,12 +6,64 @@ Azure API Management(APIM)를 AI Foundry 앞단 게이트웨이로 배치하여,
 
 ## 아키텍처
 
+```mermaid
+flowchart LR
+    subgraph Users["팅별 사용자"]
+        U1["👤 User A\n(catalog팀)"]
+        U2["👤 User B\n(catalog팀)"]
+        U3["👤 User C\n(image팀)"]
+    end
+
+    subgraph APIM["APIM Gateway"]
+        direction TB
+        PK1["Personal Key A"]
+        PK2["Personal Key B"]
+        PK3["Personal Key C"]
+        subgraph Products["프로젝트별 Product"]
+            P1["catalog-project\n(User Group: catalog)"]
+            P2["image-project\n(User Group: image)"]
+        end
+    end
+
+    subgraph Foundry["AI Foundry Resource"]
+        FP1["catalog-project\nEndpoint"]
+        FP2["image-project\nEndpoint"]
+        subgraph Models["공유 모델 배포"]
+            M1["gpt-4o"]
+            M2["gpt-5.2"]
+        end
+    end
+
+    subgraph Monitoring["모니터링"]
+        AI["App Insights\n(traces 테이블)"]
+        WB["📊 Cost Dashboard\n(Workbook)"]
+    end
+
+    U1 -->|Personal Key A| PK1
+    U2 -->|Personal Key B| PK2
+    U3 -->|Personal Key C| PK3
+    PK1 --> P1
+    PK2 --> P1
+    PK3 --> P2
+    P1 -->|Backend Routing| FP1
+    P2 -->|Backend Routing| FP2
+    FP1 --> Models
+    FP2 --> Models
+    APIM -->|"토큰 사용량\n(사용자/프로젝트/모델)"| AI
+    AI --> WB
 ```
-End User → APIM (Personal Key) → Foundry Project (Foundry Endpoint) → 공유 모델 배포
-                ↓
-        App Insights (Telemetry)
-                ↓
-        Cost Dashboard (Workbook)
+
+### 키 동작 방식
+
+```mermaid
+flowchart TD
+    A["관리자: User Group에 사용자 할당"] --> B["사용자: Developer Portal 로그인"]
+    B --> C["사용자: Product 구독 (Subscribe)"]
+    C --> D["Personal Key 발급"]
+    D --> E["API 호출\napi-key: Personal Key"]
+    E --> F["APIM: 키로 사용자/프로젝트 식별"]
+    F --> G["토큰 사용량 추출 → App Insights 기록"]
+    G --> H["📊 Workbook 대시보드\n사용자별 / 프로젝트별 / 모델별"]
 ```
 
 - **Foundry Resource** — 환경당 1개의 공유 `Microsoft.CognitiveServices/accounts` 리소스. 모든 모델 배포를 포함

@@ -6,12 +6,64 @@ This project deploys Azure API Management (APIM) as a gateway in front of AI Fou
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    subgraph Users["Team Users"]
+        U1["👤 User A\n(catalog team)"]
+        U2["👤 User B\n(catalog team)"]
+        U3["👤 User C\n(image team)"]
+    end
+
+    subgraph APIM["APIM Gateway"]
+        direction TB
+        PK1["Personal Key A"]
+        PK2["Personal Key B"]
+        PK3["Personal Key C"]
+        subgraph Products["Per-Project Products"]
+            P1["catalog-project\n(User Group: catalog)"]
+            P2["image-project\n(User Group: image)"]
+        end
+    end
+
+    subgraph Foundry["AI Foundry Resource"]
+        FP1["catalog-project\nEndpoint"]
+        FP2["image-project\nEndpoint"]
+        subgraph Models["Shared Model Deployments"]
+            M1["gpt-4o"]
+            M2["gpt-5.2"]
+        end
+    end
+
+    subgraph Monitoring["Monitoring"]
+        AI["App Insights\n(traces table)"]
+        WB["📊 Cost Dashboard\n(Workbook)"]
+    end
+
+    U1 -->|Personal Key A| PK1
+    U2 -->|Personal Key B| PK2
+    U3 -->|Personal Key C| PK3
+    PK1 --> P1
+    PK2 --> P1
+    PK3 --> P2
+    P1 -->|Backend Routing| FP1
+    P2 -->|Backend Routing| FP2
+    FP1 --> Models
+    FP2 --> Models
+    APIM -->|"Token Usage\n(user/project/model)"| AI
+    AI --> WB
 ```
-End User → APIM (Personal Key) → Foundry Project (Foundry Endpoint) → Shared Model Deployments
-                ↓
-        App Insights (Telemetry)
-                ↓
-        Cost Dashboard (Workbook)
+
+### How Keys Work
+
+```mermaid
+flowchart TD
+    A["Admin: Assign user to User Group"] --> B["User: Sign in to Developer Portal"]
+    B --> C["User: Subscribe to Product"]
+    C --> D["Personal Key Issued"]
+    D --> E["API Call\napi-key: Personal Key"]
+    E --> F["APIM: Identify user/project from key"]
+    F --> G["Extract token usage → Log to App Insights"]
+    G --> H["📊 Workbook Dashboard\nPer-user / Per-project / Per-model"]
 ```
 
 - **Foundry Resource** — One shared `Microsoft.CognitiveServices/accounts` resource per environment. Holds all model deployments
