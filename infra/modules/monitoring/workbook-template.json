@@ -148,7 +148,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by subscriber\n| order by TotalTokens desc",
+              "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"])\n| extend promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"])\n| summarize PromptTokens = sum(promptTokens), CompletionTokens = sum(completionTokens) by subscriber\n| order by subscriber asc",
               "size": 0,
               "title": "Total Token Usage by User",
               "timeContext": {
@@ -161,7 +161,12 @@
               "chartSettings": {
                 "xAxis": "subscriber",
                 "yAxis": [
-                  "TotalTokens"
+                  "PromptTokens",
+                  "CompletionTokens"
+                ],
+                "seriesLabelSettings": [
+                  { "seriesName": "PromptTokens", "label": "Input Tokens" },
+                  { "seriesName": "CompletionTokens", "label": "Output Tokens" }
                 ]
               }
             },
