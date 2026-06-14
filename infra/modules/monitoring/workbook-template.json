@@ -176,6 +176,34 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
+              "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         model = tostring(customDimensions[\"model\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"])\n| extend modelBase = case(\n    model startswith 'gpt-4o', 'gpt-4o',\n    model startswith 'gpt-5.2', 'gpt-5.2',\n    model startswith 'gpt-5.4', 'gpt-5.4',\n    model startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| lookup pricing on modelBase\n| extend InputCost = promptTokens * inputPrice / 1000000,\n         OutputCost = completionTokens * outputPrice / 1000000\n| summarize InputCost_USD = round(sum(InputCost), 4), OutputCost_USD = round(sum(OutputCost), 4) by subscriber\n| order by subscriber asc",
+              "size": 0,
+              "title": "Estimated Cost by User (USD)",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "visualization": "barchart",
+              "chartSettings": {
+                "xAxis": "subscriber",
+                "yAxis": [
+                  "InputCost_USD",
+                  "OutputCost_USD"
+                ],
+                "seriesLabelSettings": [
+                  { "seriesName": "InputCost_USD", "label": "Input Cost" },
+                  { "seriesName": "OutputCost_USD", "label": "Output Cost" }
+                ]
+              }
+            },
+            "name": "costBySubscriber"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
               "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         model = tostring(customDimensions[\"model\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| extend modelBase = case(\n    model startswith 'gpt-4o', 'gpt-4o',\n    model startswith 'gpt-5.2', 'gpt-5.2',\n    model startswith 'gpt-5.4', 'gpt-5.4',\n    model startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| lookup pricing on modelBase\n| extend cost = (promptTokens * inputPrice + completionTokens * outputPrice) / 1000000\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens),\n            EstimatedCost_USD = round(sum(cost), 4)\n         by subscriber\n| order by EstimatedCost_USD desc",
               "size": 0,
               "title": "Token Usage and Cost by User",
