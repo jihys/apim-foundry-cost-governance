@@ -1,6 +1,6 @@
 # User Quickstart
 
-> 🇰🇷 [한국어 버전](../04-user-quickstart.md)
+> 🇰🇷 [한국어 버전](../kr/04-user-quickstart.md)
 
 This guide explains how to start making API calls after obtaining your Personal Key.
 

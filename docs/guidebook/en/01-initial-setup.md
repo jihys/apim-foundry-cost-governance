@@ -1,6 +1,6 @@
 # Initial Setup Guide
 
-> 🇰🇷 [한국어 버전](../01-initial-setup.md)
+> 🇰🇷 [한국어 버전](../kr/01-initial-setup.md)
 
 This guide walks you through deploying the APIM Foundry Cost Governance infrastructure from scratch.
 

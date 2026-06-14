@@ -1,6 +1,6 @@
 # Add User Guide
 
-> 🇰🇷 [한국어 버전](../03-add-user.md)
+> 🇰🇷 [한국어 버전](../kr/03-add-user.md)
 
 This guide explains how to add a new user to an existing Foundry Project. The workflow is: the user registers on the Developer Portal, an administrator assigns them to a User Group, and then the user self-issues a Personal Key.
 

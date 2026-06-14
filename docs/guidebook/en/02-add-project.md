@@ -1,6 +1,6 @@
 # Add Project Guide
 
-> 🇰🇷 [한국어 버전](../02-add-project.md)
+> 🇰🇷 [한국어 버전](../kr/02-add-project.md)
 
 This guide explains how to add a new Foundry Project (team). There are two methods; **Method A (Terraform re-apply)** is recommended.
 
