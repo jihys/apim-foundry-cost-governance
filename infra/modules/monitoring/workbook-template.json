@@ -72,7 +72,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"]),\n         model = tostring(customDimensions[\"model\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"])\n| extend modelBase = case(\n    model startswith 'gpt-4o', 'gpt-4o',\n    model startswith 'gpt-5.2', 'gpt-5.2',\n    model startswith 'gpt-5.4', 'gpt-5.4',\n    model startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| lookup pricing on modelBase\n| extend cost = (promptTokens * inputPrice + completionTokens * outputPrice) / 1000000\n| summarize EstimatedCost_USD = round(sum(cost), 4) by projectName\n| order by EstimatedCost_USD desc",
+        "query": "let pricing = datatable(modelBase:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"]),\n         model = tostring(customDimensions[\"model\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"])\n| extend modelBase = case(\n    model startswith 'gpt-4o', 'gpt-4o',\n    model startswith 'gpt-5.2', 'gpt-5.2',\n    model startswith 'gpt-5.4', 'gpt-5.4',\n    model startswith 'text-embedding-3-large', 'text-embedding-3-large',\n    model)\n| lookup pricing on modelBase\n| extend InputCost = promptTokens * inputPrice / 1000000,\n         OutputCost = completionTokens * outputPrice / 1000000\n| summarize InputCost_USD = round(sum(InputCost), 4), OutputCost_USD = round(sum(OutputCost), 4) by projectName\n| order by projectName asc",
         "size": 0,
         "title": "Estimated Cost by Project (USD)",
         "timeContext": {
@@ -85,7 +85,12 @@
         "chartSettings": {
           "xAxis": "projectName",
           "yAxis": [
-            "EstimatedCost_USD"
+            "InputCost_USD",
+            "OutputCost_USD"
+          ],
+          "seriesLabelSettings": [
+            { "seriesName": "InputCost_USD", "label": "Input Cost" },
+            { "seriesName": "OutputCost_USD", "label": "Output Cost" }
           ]
         }
       },
