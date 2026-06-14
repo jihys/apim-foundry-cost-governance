@@ -183,9 +183,9 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "traces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model\n| order by TotalTokens desc",
+              "query": "let pricing = datatable(model:string, inputPrice:real, outputPrice:real)[\n  'gpt-4o', 2.50, 10.00,\n  'gpt-5.2', 1.75, 14.00,\n  'gpt-5.4', 2.50, 15.00,\n  'text-embedding-3-large', 0.156, 0.0\n];\ntraces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model\n| lookup pricing on model\n| extend EstimatedCost_USD = round((PromptTokens * inputPrice + CompletionTokens * outputPrice) / 1000000, 4)\n| project projectName, model, PromptTokens, CompletionTokens, TotalTokens, EstimatedCost_USD\n| order by EstimatedCost_USD desc",
               "size": 0,
-              "title": "Token Usage by Project and Model",
+              "title": "Token Usage and Estimated Cost by Project and Model",
               "timeContext": {
                 "durationMs": 0
               },
@@ -205,6 +205,20 @@
                         "style": "decimal",
                         "useGrouping": true,
                         "maximumFractionDigits": 0
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "EstimatedCost_USD",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 17,
+                      "options": {
+                        "style": "currency",
+                        "currency": "USD",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 4,
+                        "maximumFractionDigits": 4
                       }
                     }
                   }
