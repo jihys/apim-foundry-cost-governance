@@ -10,7 +10,7 @@
             "id": "a2b3c4d5-e6f7-4890-ab12-cd34ef567890",
             "version": "KqlParameterItem/1.0",
             "name": "TimeRange",
-            "label": "시간 범위",
+            "label": "Time Range",
             "type": 4,
             "isRequired": true,
             "typeSettings": {
@@ -46,7 +46,7 @@
         "version": "KqlItem/1.0",
         "query": "traces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by projectName\n| order by TotalTokens desc",
         "size": 0,
-        "title": "프로젝트별 총 토큰 사용량",
+        "title": "Total Token Usage by Project",
         "timeContext": {
           "durationMs": 0
         },
@@ -69,7 +69,7 @@
         "version": "KqlItem/1.0",
         "query": "traces\n| where message == \"TokenUsage\"\n| extend projectName = tostring(customDimensions[\"project-name\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by bin(timestamp, 1d), projectName\n| order by timestamp asc",
         "size": 0,
-        "title": "프로젝트별 일별 추이",
+        "title": "Daily Trend by Project",
         "timeContext": {
           "durationMs": 0
         },
@@ -93,7 +93,7 @@
         "version": "KqlItem/1.0",
         "query": "traces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by model\n| order by TotalTokens desc",
         "size": 0,
-        "title": "모델별 사용량",
+        "title": "Usage by Model",
         "timeContext": {
           "durationMs": 0
         },
@@ -109,7 +109,7 @@
       "content": {
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
-        "title": "사용자별 사용량",
+        "title": "Usage by User",
         "items": [
           {
             "type": 3,
@@ -117,7 +117,7 @@
               "version": "KqlItem/1.0",
               "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"])\n| extend totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize TotalTokens = sum(totalTokens) by subscriber\n| order by TotalTokens desc",
               "size": 0,
-              "title": "사용자별 총 토큰 사용량",
+              "title": "Total Token Usage by User",
               "timeContext": {
                 "durationMs": 0
               },
@@ -140,7 +140,7 @@
               "version": "KqlItem/1.0",
               "query": "traces\n| where message == \"TokenUsage\"\n| extend subscriber = tostring(customDimensions[\"subscriber\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by subscriber, projectName\n| order by projectName asc, TotalTokens desc",
               "size": 0,
-              "title": "사용자별 프로젝트별 토큰 사용량",
+              "title": "Token Usage by User and Project",
               "timeContext": {
                 "durationMs": 0
               },
@@ -177,7 +177,7 @@
       "content": {
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
-        "title": "예상 비용",
+        "title": "Estimated Cost",
         "items": [
           {
             "type": 3,
@@ -185,7 +185,7 @@
               "version": "KqlItem/1.0",
               "query": "traces\n| where message == \"TokenUsage\"\n| extend model = tostring(customDimensions[\"model\"]),\n         projectName = tostring(customDimensions[\"project-name\"]),\n         promptTokens = todouble(customDimensions[\"prompt-tokens\"]),\n         completionTokens = todouble(customDimensions[\"completion-tokens\"]),\n         totalTokens = todouble(customDimensions[\"total-tokens\"])\n| summarize PromptTokens = sum(promptTokens),\n            CompletionTokens = sum(completionTokens),\n            TotalTokens = sum(totalTokens)\n         by projectName, model\n| order by TotalTokens desc",
               "size": 0,
-              "title": "프로젝트별 모델별 토큰 사용량",
+              "title": "Token Usage by Project and Model",
               "timeContext": {
                 "durationMs": 0
               },
@@ -219,7 +219,7 @@
               "version": "KqlItem/1.0",
               "query": "datatable(Model:string, Direction:string, Price_per_1M_tokens:real, Currency:string)[\n  'gpt-4o', 'Input', 2.50, 'USD',\n  'gpt-4o', 'Output', 10.00, 'USD',\n  'gpt-5.2', 'Input', 1.75, 'USD',\n  'gpt-5.2', 'Output', 14.00, 'USD',\n  'gpt-5.4', 'Input', 2.50, 'USD',\n  'gpt-5.4', 'Output', 15.00, 'USD',\n  'text-embedding-3-large', 'Input', 0.156, 'USD'\n]\n| order by Model asc, Direction asc",
               "size": 1,
-              "title": "AI Foundry 모델별 단가 (Azure Retail Prices)",
+              "title": "Model Pricing (Azure Retail Prices)",
               "queryType": 0,
               "resourceType": "microsoft.insights/components",
               "visualization": "table",
